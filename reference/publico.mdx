@@ -1,7 +1,7 @@
 ---
-title: "Publico: Public Event Attendee Entity"
+title: "Publico: Registered Event Attendee Class Reference"
 sidebarTitle: "Publico"
-description: "Publico extends Persona and represents a registered event attendee with fields for ticket type, registration status, preferences, payment, and links to surveys and comments."
+description: "Publico extends Persona and models a registered event attendee with fields for ticket type, registration status, preferences, payment, and related records."
 ---
 
 `Publico` models a member of the general public who registers to attend an event. It extends `Persona` for all personal identification data and adds ten additional fields that capture the attendee's ticket type, registration status, preferences, payment amount, and foreign keys linking to related entities such as uploaded images, surveys, event ratings, and comments. `Publico` is the most relationship-rich subclass in the `Persona` hierarchy.

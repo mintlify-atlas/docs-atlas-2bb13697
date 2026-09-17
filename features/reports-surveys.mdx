@@ -1,7 +1,7 @@
 ---
-title: "Reports and Surveys for Organizers in DBOO"
+title: "DBOO Organizer Activity Reports and Post-Event Surveys"
 sidebarTitle: "Reports & Surveys"
-description: "DBOO includes dedicated forms for generating organizer reports and collecting post-event survey responses to evaluate event performance."
+description: "DBOO includes dedicated Swing panels for generating organizer activity reports and collecting post-event survey responses to evaluate event performance."
 ---
 
 DBOO provides two feedback and reporting tools: `ReporteOrganizador` for generating per-organizer activity reports, and `Encuestaa_Organizor` for collecting structured survey responses from organizers after events. Together they give organizers and administrators visibility into who ran which events and how those events were evaluated.
@@ -25,10 +25,10 @@ DBOO ships two separate report views depending on the user's role.
 
 ### ReporteOrganizador
 
-`ReporteOrganizador` is a `JPanel` that loads on construction (`initComponents()` calls `actualizarDatos()` in the constructor). It presents a full-width `JTable` (`jTableDatos`) populated with the following columns:
+`ReporteOrganizador` is a `JPanel` that loads on construction — `initComponents()` calls `actualizarDatos()` directly in the constructor. It presents a full-width `JTable` (`jTableDatos`) populated with the following columns:
 
-```
-Código | Cédula | Nombre | Apellido | Celular | Teléfono
+```text
+Código | Cédula | Nombre | Apellido | Celular | Telefono
 Dirección | Género | Correo | Usuario | Contraseña | Presupuesto | Fecha de Nacimiento
 ```
 
@@ -38,7 +38,17 @@ Data is fetched by querying all `Organizador` objects from the db4o `ObjectConta
 public void actualizarDatos() {
     ObjectContainer base = Db4o.openFile(Inicio.direccion);
     AsignarRegistrosArray(base);
-    // rebuilds DefaultTableModel from listaagentes
+
+    String[] columnNames = {
+        "Código", "Cédula", "Nombre", "Apellido", "Celular", "Telefono",
+        "Dirección", "Género", "Correo", " Usuario", "Contraseña",
+        "Presupuesto", "Fecha de Nacimiento"
+    };
+    Object[][] data = new Object[listaagentes.size()][13];
+    // populate data[][] from listaagentes ...
+    DefaultTableModel model = new DefaultTableModel(data, columnNames);
+    jTableDatos.setModel(model);
+
     base.close();
 }
 ```
@@ -62,7 +72,7 @@ The survey form `Encuestaa_Organizor` is a `JPanel` accessible from `MenuOrganiz
 | Descripción | `JTextArea` | Free-text survey description or comments |
 | Fecha Inicio | `JDateChooser` | Survey period start date |
 | Fecha Fin | `JDateChooser` | Survey period end date |
-| Preguntas del Evento | _(label section)_ | Section heading for structured question entries |
+| Preguntas del Evento | `JLabel` | Section heading label for structured question entries |
 
 **Action buttons:**
 

@@ -1,7 +1,7 @@
 ---
-title: "Comerciantes: Merchant Participant Entity"
+title: "Comerciantes: Merchant Participant Entity Reference"
 sidebarTitle: "Comerciantes"
-description: "Comerciantes extends Persona and represents a commercial merchant participant assigned to a booth at an event, with fields for commerce type, products, and services."
+description: "Comerciantes extends Persona and models a merchant at an event booth, with fields for commerce type, products, services, and assigned booth code."
 ---
 
 `Comerciantes` models a merchant who participates in an event by occupying a commercial booth. It extends `Persona` to inherit all personal contact information and adds six domain-specific fields: a participant code, a foreign-key reference back to the linked `Persona` record's `cedula`, the type of commerce, a description of products, a description of services, and the code of the assigned booth (`Puesto`). Comerciantes objects are stored in db4o and managed through the dedicated merchant CRUD form.

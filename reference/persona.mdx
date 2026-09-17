@@ -1,7 +1,7 @@
 ---
-title: "Persona: Base Class for All User Entities"
+title: "Persona Class: Base Entity for the DBOO Object Model"
 sidebarTitle: "Persona"
-description: "Persona is the root base class in DBOO. All user entities (Organizador, Comerciantes, Personal, Patrocinador, Publico) extend Persona and inherit its nine personal data fields."
+description: "Persona is the root base class in DBOO. Organizador, Comerciantes, Personal, Patrocinador, and Publico all extend it, inheriting nine personal data fields."
 ---
 
 `Persona` is the foundational domain class in the DBOO object model. Every participant in the system — organizers, merchants, staff, sponsors, and public attendees — is a `Persona` at its core. The class is defined in package `Clases` and holds nine fields covering identity, contact information, and demographics. All subclasses call `super(...)` to populate these fields, ensuring a consistent base record for every person stored in the db4o object database.

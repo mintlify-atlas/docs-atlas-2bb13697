@@ -1,7 +1,7 @@
 ---
-title: "Public User and Merchant Registration in DBOO"
+title: "DBOO Public User and Merchant Self-Service Registration"
 sidebarTitle: "Public / Merchant"
-description: "Public users register as event attendees and merchants apply for commercial booths, both through self-service registration forms on the DBOO welcome screen."
+description: "Public users register as event attendees and merchants apply for commercial booths through self-service forms on the DBOO welcome screen."
 ---
 
 DBOO supports two self-service registration paths for external users: public attendees register to browse and attend events, while merchants apply for a commercial booth at an upcoming event. Both flows are initiated directly from the `Inicio` welcome screen and do not require any pre-existing credentials — unlike the Administrator and Organizer roles, no administrator intervention is needed to start the registration process.
@@ -10,27 +10,32 @@ DBOO supports two self-service registration paths for external users: public att
 
 <Steps>
   <Step title="Open the registration form">
-    From the `Inicio` welcome screen, click the **CREAR CUENTA** button. This disposes the `Inicio` window and opens the `Publico` JFrame registration form.
+    From the `Inicio` welcome screen, click the **CREAR CUENTA** button (`jButton2`). This disposes the `Inicio` window and opens the `Publico` JFrame registration form.
   </Step>
   <Step title="Complete the registration form">
-    The `Publico` form captures both inherited `Persona` fields (cédula, nombre, apellido, email, teléfono, fecha de nacimiento, género) and attendee-specific fields. A unique `codigo_publico` is auto-generated and displayed in the `lblcod` label.
+    The `Publico` form captures both inherited `Persona` fields (cédula, nombre, apellido, email, teléfono, fecha de nacimiento, género) and attendee-specific fields. A `codigo_publico` is displayed in the `lblcod` label. The form also includes a `Contraseña` password field (`jPasswordField1`).
   </Step>
   <Step title="Submit the account">
-    Click **CREAR CUENTA** inside the form to save the new public user record to the db4o object store. The back button (`jButton3`) returns to the `Inicio` screen without saving.
+    Click **CREAR CUENTA** (`jButton1`) inside the form to save the new public user record to the db4o object store.
   </Step>
 </Steps>
 
 ### Public user fields
 
-The following fields are specific to the `Clases.Publico` class (beyond the base `Persona` fields):
+The following fields are defined on the `Clases.Publico` class (beyond the base `Persona` fields):
 
 | Field | Type | Description |
 |---|---|---|
-| `codigo_publico` | `String` | Unique attendee code (auto-generated) |
+| `codigo_publico` | `String` | Unique attendee code (primary key) |
 | `Tipo_Entrada` | `String` | Ticket type for the event |
 | `Estado_reguistro` | `String` | Registration status |
 | `Preferencias_p` | `String` | Event preferences |
 | `Pago_p` | `double` | Payment amount |
+| `codigo_sube_ima` | `String` | Foreign key to uploaded image |
+| `codigo_encuesta` | `String` | Foreign key to survey record |
+| `califica_eve` | `String` | Foreign key to event rating |
+| `codigo_comen` | `String` | Foreign key to comment record |
+| `cedula_persona` | `String` | Foreign key to the base `Persona` record |
 
 ## Merchant registration
 
@@ -39,10 +44,10 @@ The following fields are specific to the `Clases.Publico` class (beyond the base
     From the `Inicio` welcome screen, open the menu bar and select **SOLICITAR PUESTO > Crear Cuenta**. This disposes the `Inicio` window and opens the `Comerciante` JFrame registration form.
   </Step>
   <Step title="Complete the merchant form">
-    The `Comerciante` form captures the standard `Persona` fields (cédula, nombre, apellido, email, teléfono, dirección, celular, fecha de nacimiento, género) as well as merchant-specific fields. The `codigo_participante` is auto-generated from the current list size. A `cboCodigoPuesto` combo box lets the applicant indicate their preferred booth (`codigo_puesto`).
+    The `Comerciante` form captures the standard `Persona` fields (cédula, nombre, apellido, email, teléfono, dirección, celular, fecha de nacimiento, género) as well as merchant-specific fields. The `lblCodigoComerciante` label displays the auto-generated `codigo_participante`, computed from the current size of `ReporteOrganizador.listaagentes`. A `cboCodigoPuesto` combo box lets the applicant indicate their preferred booth (`codigo_puesto`).
   </Step>
   <Step title="Submit the application">
-    Click **GUARDAR** to persist the `Comerciantes` object. The form validates all fields using `Validaciones` before storing. The back button (`jButton1`) returns to the `Inicio` screen without saving.
+    Click **GUARDAR** (`btnGuardar`) to persist the `Comerciantes` object. The form validates all fields using `Validaciones` before storing. The back button (`jButton1`) returns to the `Inicio` screen without saving.
   </Step>
 </Steps>
 
@@ -52,11 +57,12 @@ The following fields are specific to the `Clases.Publico` class (beyond the base
 
 ### Merchant fields
 
-The following fields are specific to the `Clases.Comerciantes` class (beyond the base `Persona` fields):
+The following fields are defined on the `Clases.Comerciantes` class (beyond the base `Persona` fields):
 
 | Field | Type | Description |
 |---|---|---|
-| `codigo_participante` | `String` | Unique merchant code (auto-generated) |
+| `codigo_participante` | `String` | Unique merchant code (primary key, auto-generated) |
+| `cedula_perso` | `String` | Foreign key linking to the base `Persona` record |
 | `Tipo_Comercio` | `String` | Commerce type (e.g. food, crafts) |
 | `Productos_c` | `String` | Products offered at the booth |
 | `Servicio_c` | `String` | Services offered at the booth |
@@ -68,8 +74,8 @@ After registration, public users access `Menu_Publico`, a dedicated `JFrame` das
 
 | Button label | Purpose |
 |---|---|
-| Eventos Próximos | Browse upcoming events |
-| Calificación | Rate or view event ratings |
+| Eventos Proximos | Browse upcoming events |
+| Calificacion | Rate or view event ratings |
 | Mi Blog | Access the public blog section |
-| Ubicación | View event locations on a map |
+| Ubicacion | View event locations on a map |
 | Salir | Exit the application |

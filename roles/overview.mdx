@@ -1,7 +1,7 @@
 ---
-title: "User Roles and Access in DBOO"
+title: "User Roles and Access Control in the DBOO Application"
 sidebarTitle: "Overview"
-description: "DBOO supports three distinct user roles — Administrator, Organizer, and Public/Merchant — each with its own login flow and set of available operations."
+description: "DBOO provides three distinct role-based access paths: Administrator, Organizer, and Public/Merchant, each with separate login flows and operations."
 ---
 
 DBOO implements role-based access through three separate login paths, each leading to a dedicated menu and set of CRUD forms. Roles are not selected from a shared login page — instead, each entry point is exposed directly from the main `Inicio` welcome screen, ensuring that users are routed to the correct authentication flow before they ever see a form.
@@ -10,7 +10,7 @@ DBOO implements role-based access through three separate login paths, each leadi
 
 | Role | Entry Point | Login Required | Key Capabilities |
 |---|---|---|---|
-| Administrator | Menu > **INICIO COMO:** > Administrador > Iniciar sesión | Yes (`Login_Administradoor`) | Manage all organizers, departments, global data |
+| Administrator | Menu > **INICIO COMO:** > Administrador > Iniciar sesión | Yes (`Login_Administradoor`) | Manage all organizers and generate reports |
 | Organizer | Menu > **INICIO COMO:** > Organizadores > Iniciar sesión | Yes (`Login_Organizador`) | Manage own events, staff, sponsors, merchants |
 | Public User | **CREAR CUENTA** button | Registration only | Browse events, register, comment |
 | Merchant | **SOLICITAR PUESTO** > Crear Cuenta | Registration only | Apply for a commercial booth at an event |
@@ -27,7 +27,7 @@ DBOO implements role-based access through three separate login paths, each leadi
     icon="shield"
     href="/roles/administrator"
   >
-    Full system access — manage organizers, departments, credentials, and generate reports.
+    Full system access — manage organizers, assign credentials, and generate reports.
   </Card>
   <Card
     title="Organizer"

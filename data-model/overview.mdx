@@ -1,7 +1,7 @@
 ---
-title: "DBOO Data Model: Object Graph Overview"
+title: "DBOO Data Model: Complete Object Graph and Entities"
 sidebarTitle: "Overview"
-description: "Survey of all domain entities in DBOO and how they relate as an object graph persisted to a db4o .yap file."
+description: "Survey of all DBOO domain entities — Persona, Organizador, Comerciantes, Personal, Patrocinador, Publico — and their connections as a db4o object graph."
 ---
 
 DBOO stores all application data as a connected object graph inside a single db4o `.yap` file. Rather than relying on traditional relational foreign-key joins, objects hold direct references or store string codes (acting as primary/foreign key identifiers) to link related objects. This approach leverages db4o's native object persistence while remaining compatible with Java Swing's GUI table-binding patterns.
@@ -9,28 +9,28 @@ DBOO stores all application data as a connected object graph inside a single db4
 ## Entity inventory
 
 <CardGroup cols={2}>
-  <Card title="Persona" href="/reference/persona">
+  <Card title="Persona" href="/data-model/person-hierarchy">
     Base person class that provides shared personal data fields — cedula, nombre, apellido, correo, and more — inherited by every user-facing entity.
   </Card>
-  <Card title="Organizador" href="/reference/organizador">
-    Event organizer with login credentials (`usuario` / `contraseña`) and a budget (`presupuesto`). Extends `Persona`.
+  <Card title="Organizador" href="/data-model/person-hierarchy">
+    Event organizer with login credentials (`usuario` / `contraseña`) and a budget (`Presupuesto`). Extends `Persona`.
   </Card>
-  <Card title="Comerciantes" href="/reference/comerciantes">
+  <Card title="Comerciantes" href="/data-model/person-hierarchy">
     Merchant participant assigned to a commercial booth. Stores trade type, products, and services. Extends `Persona`.
   </Card>
-  <Card title="Personal" href="/reference/personal">
+  <Card title="Personal" href="/data-model/person-hierarchy">
     Contracted staff member with a role, department, performance rating, and contract date range. Extends `Persona`.
   </Card>
-  <Card title="Patrocinador" href="/reference/patrocinador">
+  <Card title="Patrocinador" href="/data-model/person-hierarchy">
     Event sponsor with description, contact, and social media links. Links back to a `Persona` record via `cedula_perso`.
   </Card>
-  <Card title="Publico" href="/reference/publico">
+  <Card title="Publico" href="/data-model/person-hierarchy">
     Public attendee with ticket type, registration status, preferences, and payment amount. Holds FK codes for surveys, images, ratings, and comments.
   </Card>
-  <Card title="Ciudad / Direccion / Departamento" href="/reference/location-classes">
+  <Card title="Ciudad / Direccion / Departamento" href="/data-model/location">
     Geographic and organizational location entities that capture city, street address, and department data for events and participants.
   </Card>
-  <Card title="Puesto" href="/reference/location-classes">
+  <Card title="Puesto" href="/data-model/location">
     Commercial booth entity assigned to a merchant (`Comerciantes`) through the `codigo_puesto` foreign key field.
   </Card>
 </CardGroup>

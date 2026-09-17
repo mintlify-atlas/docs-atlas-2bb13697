@@ -1,7 +1,7 @@
 ---
 title: "Organizador: Event Organizer with Login Credentials"
 sidebarTitle: "Organizador"
-description: "Organizador extends Persona and adds event organizer fields: a unique code, login username, password, and budget for event management."
+description: "Organizador extends Persona and adds a unique organizer code, login username, password, and budget. Used for authentication and event management in DBOO."
 ---
 
 `Organizador` represents a registered event organizer in DBOO. Beyond the nine personal-data fields inherited from `Persona`, it adds four domain-specific fields: a unique organizer code, a login username, a login password, and a budget figure used during event planning. Organizer objects are persisted directly to the db4o `ObjectContainer` and are used to authenticate users who access the organizer-facing Swing forms.

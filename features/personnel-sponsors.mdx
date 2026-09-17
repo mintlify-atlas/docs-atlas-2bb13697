@@ -1,7 +1,7 @@
 ---
-title: "Managing Personnel and Sponsors in DBOO"
+title: "DBOO Personnel and Sponsor Records Management Guide"
 sidebarTitle: "Personnel & Sponsors"
-description: "Track contracted staff with contract dates and performance ratings, and manage event sponsors with contact details and social media links."
+description: "Track contracted staff with contract dates and performance ratings, and manage event sponsors with contact details and social media links in DBOO."
 ---
 
 DBOO tracks two categories of supporting participants: **Personnel** (contracted event staff) and **Patrocinadores** (sponsors). Each has a dedicated CRUD form and a rich set of fields capturing contract terms and contact details. Both entity classes extend the shared `Persona` base class, so every staff member and sponsor record automatically carries common personal information — name, identity number, email, phone, address, and date of birth — alongside their role-specific attributes.
@@ -26,9 +26,23 @@ Personnel records are managed through the `Cruds_Personal` form, which is access
 
 Inherited `Persona` fields (cedula, nombre, apellido, telefono, correo, direccion, celular, fecchaNaci, genero) are also present on every `Personal` instance.
 
-### Full constructor
+<Note>
+  The field is spelled `contanto_p` (not `contacto_p`) in the source class. This is the actual field name as defined in `Personal.java` and must be used exactly when querying or constructing objects.
+</Note>
+
+### Constructors
+
+`Personal` exposes two non-default constructors. The first accepts only the role-specific fields (no `Persona` inheritance data); the second is the full constructor that initialises both the subclass and superclass fields:
 
 ```java
+// Role-specific fields only
+public Personal(String codigo_perso, String Tipo_personal,
+                String Departamento_p, String contanto_p,
+                String Calificacion_p, Date Fecha_contrato_inicio,
+                Date Fecha_contrato_fin, String cedula_perso,
+                String cod_evento)
+
+// Full constructor (role fields + inherited Persona fields)
 public Personal(String codigo_perso, String Tipo_personal,
                 String Departamento_p, String contanto_p,
                 String Calificacion_p, Date Fecha_contrato_inicio,
@@ -83,7 +97,7 @@ public Patrocinador(String codigo_patri, String Descripcion_p,
 
 The sponsor table (`jTable1` in `Crud_Patrocinado`) displays the following columns populated from the `ObjectContainer` at runtime:
 
-```
+```text
 Cédula | Nombre | Apellido | Teléfono | Email | Dirección | Celular
 Género | Cédula Persona | Código | Descripción | Redes Sociales | Fecha de Nacimiento
 ```

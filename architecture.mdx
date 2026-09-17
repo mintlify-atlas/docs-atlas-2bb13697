@@ -1,7 +1,7 @@
 ---
 title: "DBOO Application Architecture and Project Structure"
 sidebarTitle: "Architecture"
-description: "Understand how DBOO is layered across Swing GUI forms, domain model classes, and the db4o object-oriented persistence engine."
+description: "Understand how DBOO layers Swing GUI forms over plain Java domain classes with db4o providing direct object persistence to a binary .yap file on disk."
 ---
 
 DBOO follows a two-tier desktop architecture: a Swing presentation layer made up of JFrame forms in the `proyecto_final` package sits directly on top of a set of plain Java domain classes in the `Clases` package, with db4o providing transparent object persistence to a `.yap` binary file on disk. There is no service layer, no DAO abstraction, and no intermediate query language — each form opens the `ObjectContainer`, interacts with stored objects, and closes the container when done.
@@ -56,7 +56,11 @@ orientado_objetos/
 │       ├── Info_Organizador.java
 │       ├── Blog.java
 │       ├── Comerciante.java
+│       ├── Patrocinador.java
 │       └── Publico.java
+├── Proyecto_final/          # Standalone NetBeans project stub
+│   └── src/proyecto_final/
+│       └── Proyecto_final.java
 ├── Trabajo_db4o/            # Standalone db4o demo module
 │   └── src/trabajo_db4o/
 │       ├── Trabajo_db4o.java
@@ -110,7 +114,7 @@ ObjectContainer base = Db4o.openFile(direccion);
 
 // Store a new object
 CrearEmpleado(base, "0106170129", "Anthony", "Fajardo",
-    "mauricio.2004@gmail.cs", "0987654321", "12/01/2010",
+    "mauricio.2004@gmaikl.cs", "0987654321", "12/01/2010",
     " ", "fiestas", "001", 450.0, 5);
 
 base.close();

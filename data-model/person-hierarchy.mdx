@@ -1,7 +1,7 @@
 ---
-title: "Person Hierarchy: Shared Base Class for All Users"
+title: "Persona Hierarchy: Base Class and All DBOO Subclasses"
 sidebarTitle: "Person Hierarchy"
-description: "All user entities in DBOO inherit from the Persona base class, sharing common personal data fields and getters/setters."
+description: "DBOO user entities all extend Persona. Documents every field and constructor for Organizador, Patrocinador, Comerciantes, Personal, and Publico subclasses."
 ---
 
 Every user-facing entity in DBOO extends `Persona`, a Java class that holds the universal personal data fields shared across organizers, merchants, staff, sponsors, and public attendees. This inheritance keeps personal data DRY and lets CRUD forms reuse the same field set without duplicating validation logic or column definitions across multiple classes.

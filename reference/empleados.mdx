@@ -1,7 +1,7 @@
 ---
-title: "Empleados: Employee Class in the DB4O Demo Module"
+title: "Empleados: Java Employee Entity for DB4O Persistence"
 sidebarTitle: "Empleados"
-description: "The Empleados class models an employee record in the Trabajo_db4o demo module, demonstrating basic db4o persistence with salary, department, and contract fields."
+description: "Empleados models an employee record in the Trabajo_db4o demo module, showing how db4o persists Java objects with salary, department, and role fields."
 ---
 
 `Empleados` is the domain class in the `Trabajo_db4o` sub-project. Unlike the main application's `Clases` package, `Empleados` does not extend `Persona` — it is a standalone POJO demonstrating raw db4o object persistence with 11 fields covering personal contact information, payroll data, and organisational placement. The class is instantiated by the `CrearEmpleado` static helper in `Trabajo_db4o.java`, which immediately hands each new instance to `base.set()` for storage.

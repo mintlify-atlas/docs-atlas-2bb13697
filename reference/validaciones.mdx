@@ -1,7 +1,7 @@
 ---
-title: "Validaciones: Complete Input Validation API"
+title: "Validaciones: DBOO Input Validation Class Reference"
 sidebarTitle: "Validaciones"
-description: "The Validaciones class provides 14 methods for validating all user inputs in DBOO, including national IDs, emails, dates, passwords, scores, and more."
+description: "The Validaciones class provides 19 methods for validating all user inputs in DBOO, including national IDs, emails, dates, passwords, scores, and more."
 ---
 
 `Validaciones` is the centralised input-validation library for DBOO. All user-facing Swing forms call methods from this class before persisting data to the db4o object database. The class lives in package `Clases` and has no superclass. Most methods are instance methods returning `boolean`; one method — `ValidarCedula` — is also provided as a `static` convenience overload. Regex patterns and calendar logic are defined inline within each method and are documented below.
