@@ -1,0 +1,88 @@
+---
+title: "DB4O Persistence: Object Storage with Db4objects"
+sidebarTitle: "DB4O Overview"
+description: "DBOO uses the db4o object-oriented database engine to persist all Java objects directly to a .yap file without SQL schemas or ORM mapping."
+---
+
+db4o (Db4objects) is an embedded object-oriented database for Java that stores objects natively. DBOO uses db4o as its sole persistence layer — every domain object (`Organizador`, `Evento`, `Personal`, and others) is stored directly into a binary `.yap` file via an `ObjectContainer` without any SQL schema or relational mapping. There is no query language to learn, no table definitions to maintain, and no ORM configuration — plain Java objects go in and come back out exactly as they were stored.
+
+## How db4o works in DBOO
+
+Every interaction with the database follows three fundamental operations:
+
+1. **Open** — `Db4o.openFile(String path)` opens an existing `.yap` database file at the given path, or creates a new one if it does not exist. It returns an `ObjectContainer` that represents the live session.
+2. **Store** — `container.set(object)` persists any Java object into the open container. db4o traverses the entire object graph automatically, storing referenced objects alongside the root object.
+3. **Close** — `container.close()` flushes all pending writes to disk and releases the file lock. This must always be called when the session is finished.
+
+The pattern used throughout DBOO, as seen in `Trabajo_db4o.java`, is:
+
+```java
+ObjectContainer base = Db4o.openFile(direccion);
+
+// Store an object
+base.set(empleado1);
+
+// Always close when done
+base.close();
+```
+
+<Tip>
+  db4o's `ObjectContainer.set()` method persists the entire object graph. If a stored object references other objects, those are stored too — no manual join tables required.
+</Tip>
+
+## Database file path configuration
+
+The `.yap` file path is configured as a `public static String` field named `direccion` in each module. Because the field is `static`, every form and utility class in that module reads from the same single string at runtime. The active path in each module is:
+
+```java
+// In Inicio.java (main app)
+public static String direccion =
+    "C:\\Users\\HP\\Documents\\GitHub\\orientado_objetos\\pro.yap";
+
+// In Trabajo_db4o.java (employee module)
+public static String direccion =
+    "C:\\Users\\Lenovo.User\\Documents\\base_orientada\\recursos_humanos.yap";
+```
+
+<Warning>
+  The database file path is hardcoded. Before running on a new machine, update the `direccion` field in `Inicio.java` (and `Trabajo_db4o.java`) to a valid local path where the application has read/write permission.
+</Warning>
+
+## Two separate databases
+
+The project uses two independent db4o databases that share no data:
+
+1. **`pro.yap`** — the main application database for events, organizers, merchants, and related domain objects. Opened and managed by `Inicio.java` and the forms in the `proyecto_final` package.
+2. **`recursos_humanos.yap`** — the employee management demo database used exclusively by the `Trabajo_db4o` sub-project. It stores `Empleados` objects and is opened by `Trabajo_db4o.java`.
+
+Each database file is created automatically by db4o the first time `Db4o.openFile()` is called with its path, so no separate database setup step is required.
+
+## Required dependencies
+
+To use db4o in either NetBeans project, the db4o JAR must be on the compile and runtime classpath:
+
+1. Download `db4o-X.X-all-java5.jar` from the Db4objects distribution.
+2. In NetBeans, right-click the project → **Properties** → **Libraries** → **Add JAR/Folder**.
+3. Select the downloaded JAR and click **OK**.
+4. Confirm that `import com.db4o.*;` resolves without errors in your source files.
+
+The `Trabajo_db4o.java` source file already contains the correct import:
+
+```java
+import com.db4o.*;
+```
+
+## Querying objects
+
+Retrieval uses db4o's native query mechanism: pass a template (prototype) object to `container.get()`. The engine returns all stored objects whose non-default fields match the template. The following example retrieves every `Empleados` record from the open container:
+
+```java
+// Native query example (retrieves all Empleados)
+ObjectSet result = base.get(new Empleados());
+while (result.hasNext()) {
+    Empleados e = (Empleados) result.next();
+    System.out.println(e);
+}
+```
+
+Passing `new Empleados()` with no field values set acts as a wildcard and returns all stored instances of that class. To filter by a specific field, set only that field on the template object before passing it to `get()`.

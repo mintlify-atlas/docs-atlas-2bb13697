@@ -1,0 +1,101 @@
+---
+title: "Location Classes: Ciudad, Direccion, Departamento, Puesto"
+sidebarTitle: "Location"
+description: "The four location-related classes in DBOO model geographic data, addresses, organizational departments, and commercial booth assignments."
+---
+
+DBOO includes four location-related classes that capture geographic and organizational context for events and participants. `Ciudad` and `Direccion` model physical geography; `Departamento` represents an internal organizational unit; and `Puesto` describes a commercial booth at an event venue. Each class is a standalone db4o-persisted object with its own primary key code.
+
+## Ciudad
+
+`Ciudad` (city) stores the geographic location of an event or participant.
+
+| Field | Type | Description |
+|---|---|---|
+| `Codigo_ciudad` | `String` | Unique city code — primary key |
+| `Pais_C` | `String` | Country the city belongs to |
+| `nombre` | `String` | City name |
+| `region` | `String` | Region or province |
+
+---
+
+## Direccion
+
+`Direccion` (address) captures a street-level address using two street references.
+
+| Field | Type | Description |
+|---|---|---|
+| `Codigo_direccion` | `String` | Unique address code — primary key |
+| `calle_principal` | `String` | Main street name |
+| `calle_secundaria` | `String` | Secondary or cross-street name |
+
+The class overrides `toString()` to produce a human-readable summary:
+
+```java
+@Override
+public String toString() {
+    return "Direccion{" + "Codigo_direccion=" + Codigo_direccion
+        + ", calle_principal=" + calle_principal
+        + ", calle_secundaria=" + calle_secundaria + '}';
+}
+```
+
+---
+
+## Departamento
+
+`Departamento` represents an internal organizational department, used to categorize contracted `Personal` staff members.
+
+| Field | Type | Description |
+|---|---|---|
+| `id_departamento` | `String` | Department identifier — primary key |
+| `nombre` | `String` | Department name |
+| `descripcion` | `String` | Description of the department's role or responsibilities |
+
+The `toString()` override from source:
+
+```java
+@Override
+public String toString() {
+    return "Departamento{" + "id_departamento=" + id_departamento
+        + ", nombre=" + nombre + ", descripcion=" + descripcion + '}';
+}
+```
+
+---
+
+## Puesto
+
+`Puesto` (booth) represents a commercial stall or stand at an event. Each booth is assigned to a `Comerciantes` merchant through a string FK.
+
+| Field | Type | Description |
+|---|---|---|
+| `Codigo_puesto` | `String` | Unique booth code — primary key |
+| `NombrePuesto` | `String` | Display name of the booth |
+| `DescripcionPuesto` | `String` | Description of the booth's purpose or contents |
+| `tipo_puesto` | `String` | Booth type classification (e.g. food stall, craft stand) |
+
+Full constructor signature (from source):
+
+```java
+public Puesto(String Codigo_puesto, String NombrePuesto,
+              String DescripcionPuesto, String tipo_puesto)
+```
+
+<Tip>
+  Booths (`Puesto`) are linked to merchants (`Comerciantes`) through the `codigo_puesto` foreign key field on `Comerciantes`. To find the merchant occupying a booth, query all `Comerciantes` objects and filter by matching `codigo_puesto`.
+</Tip>
+
+---
+
+## CRUD forms for location
+
+Each location entity is managed through a dedicated Swing form:
+
+| Form | Manages | Operations |
+|---|---|---|
+| `Crud_Ubicacion` | `Ciudad` and `Direccion` location/address data | Create, read, update, delete address and city records |
+| `Crud_Departamento` | `Departamento` organizational units | Create, read, update, delete department definitions |
+| `Crud_Puestos` | `Puesto` commercial booth assignments | Create, read, update, delete booth records and types |
+
+All three forms follow the same pattern as the rest of the DBOO CRUD layer: they read from db4o using `ObjectSet` queries, populate a `JTable` for browsing, and write back to the `ObjectContainer` on save or update.

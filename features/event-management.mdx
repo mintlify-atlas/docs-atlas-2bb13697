@@ -1,0 +1,71 @@
+---
+title: "Event Management: Create, Update, and Delete Events"
+sidebarTitle: "Event Management"
+description: "DBOO provides full CRUD for events through dedicated Swing forms for both administrators and organizers, with date pickers and type classification."
+---
+
+Event management is the core workflow in DBOO. Two forms handle event CRUD: `Crud_Evento` (for administrators) and `Cruds_Eventos` (for organizers). Both forms display the full list of events in a `JTable` and provide buttons for create, update, delete, and clear operations. Events are persisted directly as Java objects inside the db4o `ObjectContainer`, with no intermediate relational schema.
+
+## Event form fields
+
+Both `Crud_Evento` and `Cruds_Eventos` expose the same set of core fields. The table below maps each visible label to its Swing component and purpose.
+
+| Field | Component | Description |
+|---|---|---|
+| Código Evento | `JTextField` | Unique event identifier |
+| Nombre | `JTextField` | Event name |
+| Tipo de Evento | `JComboBox` | Event type dropdown |
+| Fecha de Inicio | `JDateChooser` | Start date |
+| Hora de Inicio | `JTextField` | Start time (free-text) |
+| Fecha de Fin | `JDateChooser` | End date |
+| Hora de Fin | `JTextField` | End time (free-text) |
+| Descripción | `JTextArea` | Free-text event description |
+| Imagen | `JLabel` | Preview of the associated event image |
+
+The organizer form (`Cruds_Eventos`) additionally exposes three foreign-key selectors:
+
+| Field | Component | Description |
+|---|---|---|
+| Código Organizador | `JComboBox` | Links the event to the responsible organizer |
+| Código Puesto | `JComboBox` | Links the event to an assigned venue booth |
+| Código Ubicación | `JComboBox` | Links the event to a physical location |
+
+<Note>
+  `JDateChooser` is provided by the JCalendar library (`com.toedter.calendar.JDateChooser`). Ensure the JCalendar JAR is on the classpath before running the application, or the forms will fail to initialize.
+</Note>
+
+## CRUD operations
+
+All four action buttons are present in both forms. Clicking a button triggers the corresponding db4o operation on the currently selected or entered event.
+
+**Guardar (Save)**
+Reads all form fields, constructs a new event object, and stores it in the db4o `ObjectContainer` via `ObjectContainer.store()`. The new record is immediately reflected in the `JTable` below the form.
+
+**Modificar (Update)**
+Queries the `ObjectContainer` for the event whose code matches the value in the _Código Evento_ field, updates its fields from the current form values, and calls `ObjectContainer.store()` again on the retrieved object to commit the change.
+
+**Eliminar (Delete)**
+Prompts the user to supply (or confirm) the event code to remove, locates the matching object with a db4o `Query`, and removes it via `ObjectContainer.delete()`. The table is refreshed after deletion.
+
+**Limpiar (Clear)**
+Resets all form text fields, clears the date choosers, and deselects any JTable row — no database write occurs. Used to prepare the form for a new entry without closing the window.
+
+## Accessing event management
+
+The two event CRUD forms are reached from different role-specific menus:
+
+**Administrator path**
+
+```
+Menu_Administradorr  →  Crud_Evento  (JFrame)
+```
+
+`Crud_Evento` is a standalone `JFrame` launched from the administrator menu. It provides full control over all events stored in the system.
+
+**Organizer path**
+
+```
+MenuOrganizador  →  Cruds_Eventos  (JPanel embedded in the organizer workspace)
+```
+
+`Cruds_Eventos` is a `JPanel` embedded inside the organizer's tabbed or card-layout workspace. In addition to the standard CRUD buttons, it includes a **Reporte** button that launches the per-organizer event report.

@@ -1,0 +1,181 @@
+---
+title: "Publico: Public Event Attendee Entity"
+sidebarTitle: "Publico"
+description: "Publico extends Persona and represents a registered event attendee with fields for ticket type, registration status, preferences, payment, and links to surveys and comments."
+---
+
+`Publico` models a member of the general public who registers to attend an event. It extends `Persona` for all personal identification data and adds ten additional fields that capture the attendee's ticket type, registration status, preferences, payment amount, and foreign keys linking to related entities such as uploaded images, surveys, event ratings, and comments. `Publico` is the most relationship-rich subclass in the `Persona` hierarchy.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `Clases.Persona`              |
+| **Imports** | `Clases.Persona`, `java.util.Date` |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Publico()
+```
+
+Delegates to `super()`. All fields are `null` / `0.0`. Used by db4o during object reconstruction.
+
+### Full constructor
+
+```java
+public Publico(
+    String codigo_publico,
+    String Tipo_Entrada,
+    String Estado_reguistro,
+    String Preferencias_p,
+    double Pago_p,
+    String codigo_sube_ima,
+    String codigo_encuesta,
+    String califica_eve,
+    String codigo_comen,
+    String cedula_persona,
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+The first ten parameters populate `Publico`-specific fields; the remaining nine are forwarded to `super(cedula, nombre, ...)`.
+
+<ParamField path="codigo_publico" type="String" required>
+  Primary key. Unique identifier for this attendee registration record.
+</ParamField>
+
+<ParamField path="Tipo_Entrada" type="String" required>
+  Type of ticket purchased (e.g., general admission, VIP, press).
+</ParamField>
+
+<ParamField path="Estado_reguistro" type="String" required>
+  Registration status of the attendee (e.g., confirmed, pending, cancelled). Note: `reguistro` is preserved from source.
+</ParamField>
+
+<ParamField path="Preferencias_p" type="String" required>
+  Attendee's stated preferences or interests relevant to event activities.
+</ParamField>
+
+<ParamField path="Pago_p" type="double" required>
+  Amount paid by the attendee for registration or ticket purchase. Validated by `Validaciones.validarDouble()`.
+</ParamField>
+
+<ParamField path="codigo_sube_ima" type="String" required>
+  Foreign key → image upload entity. Links the attendee to any images they have uploaded (e.g., profile photo).
+</ParamField>
+
+<ParamField path="codigo_encuesta" type="String" required>
+  Foreign key → survey (Encuesta) entity. Links the attendee to a post-event survey record.
+</ParamField>
+
+<ParamField path="califica_eve" type="String" required>
+  Foreign key → event rating (califica evento) entity. Links the attendee to their event rating record.
+</ParamField>
+
+<ParamField path="codigo_comen" type="String" required>
+  Foreign key → comment (Comentario) entity. Links the attendee to their comment record about the event.
+</ParamField>
+
+<ParamField path="cedula_persona" type="String" required>
+  Foreign key → `Persona.cedula`. Links this attendee registration to the person's core identity record.
+</ParamField>
+
+<ParamField path="cedula" type="String" required>
+  Inherited: national 10-digit ID. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Inherited: first name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="apellido" type="String" required>
+  Inherited: last name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="telefono" type="String" required>
+  Inherited: landline phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="correo" type="String" required>
+  Inherited: email address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="direccion" type="String" required>
+  Inherited: address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="celular" type="String" required>
+  Inherited: mobile phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="fecchaNaci" type="java.util.Date" required>
+  Inherited: date of birth. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="genero" type="String" required>
+  Inherited: gender (`"H"` or `"M"`). Passed to `Persona` constructor.
+</ParamField>
+
+## Fields
+
+### Publico-specific fields
+
+| Field               | Type     | Access    | Description                                                                 |
+|---------------------|----------|-----------|-----------------------------------------------------------------------------|
+| `codigo_publico`    | `String` | `private` | Primary key. Unique attendee registration identifier.                      |
+| `Tipo_Entrada`      | `String` | `private` | Ticket type (general, VIP, press, etc.).                                   |
+| `Estado_reguistro`  | `String` | `private` | Registration status. (`reguistro` spelling preserved from source.)         |
+| `Preferencias_p`    | `String` | `private` | Attendee's stated preferences or interests.                                |
+| `Pago_p`            | `double` | `private` | Payment amount made by the attendee.                                       |
+| `codigo_sube_ima`   | `String` | `private` | Foreign key → uploaded image entity.                                       |
+| `codigo_encuesta`   | `String` | `private` | Foreign key → survey (Encuesta) entity.                                    |
+| `califica_eve`      | `String` | `private` | Foreign key → event rating entity.                                         |
+| `codigo_comen`      | `String` | `private` | Foreign key → comment (Comentario) entity.                                 |
+| `cedula_persona`    | `String` | `private` | Foreign key → `Persona.cedula`.                                            |
+
+### Inherited fields (from Persona)
+
+See the [Persona reference](/reference/persona) for the nine inherited fields.
+
+<Note>
+  `Publico` does not override `toString()`. When printing a `Publico` instance directly, the inherited `Persona.toString()` is used. Access `Publico`-specific fields through getters when building reports or logs.
+</Note>
+
+## Getters and setters
+
+| Method                                          | Returns / Parameter | Description                        |
+|-------------------------------------------------|---------------------|------------------------------------|
+| `getCodigo_publico()`                           | `String`            | Returns `codigo_publico`.          |
+| `setCodigo_publico(String codigo_publico)`      | `void`              | Sets `codigo_publico`.             |
+| `getTipo_Entrada()`                             | `String`            | Returns `Tipo_Entrada`.            |
+| `setTipo_Entrada(String Tipo_Entrada)`          | `void`              | Sets `Tipo_Entrada`.               |
+| `getEstado_reguistro()`                         | `String`            | Returns `Estado_reguistro`.        |
+| `setEstado_reguistro(String Estado_reguistro)`  | `void`              | Sets `Estado_reguistro`.           |
+| `getPreferencias_p()`                           | `String`            | Returns `Preferencias_p`.          |
+| `setPreferencias_p(String Preferencias_p)`      | `void`              | Sets `Preferencias_p`.             |
+| `getPago_p()`                                   | `double`            | Returns `Pago_p`.                  |
+| `setPago_p(double Pago_p)`                      | `void`              | Sets `Pago_p`.                     |
+| `getCodigo_sube_ima()`                          | `String`            | Returns `codigo_sube_ima`.         |
+| `setCodigo_sube_ima(String codigo_sube_ima)`    | `void`              | Sets `codigo_sube_ima`.            |
+| `getCodigo_encuesta()`                          | `String`            | Returns `codigo_encuesta`.         |
+| `setCodigo_encuesta(String codigo_encuesta)`    | `void`              | Sets `codigo_encuesta`.            |
+| `getCalifica_eve()`                             | `String`            | Returns `califica_eve`.            |
+| `setCalifica_eve(String califica_eve)`          | `void`              | Sets `califica_eve`.               |
+| `getCodigo_comen()`                             | `String`            | Returns `codigo_comen`.            |
+| `setCodigo_comen(String codigo_comen)`          | `void`              | Sets `codigo_comen`.               |
+| `getCedula_persona()`                           | `String`            | Returns `cedula_persona`.          |
+| `setCedula_persona(String cedula_persona)`      | `void`              | Sets `cedula_persona`.             |
+
+All nine `Persona` getters and setters are also available through inheritance.

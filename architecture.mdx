@@ -1,0 +1,138 @@
+---
+title: "DBOO Application Architecture and Project Structure"
+sidebarTitle: "Architecture"
+description: "Understand how DBOO is layered across Swing GUI forms, domain model classes, and the db4o object-oriented persistence engine."
+---
+
+DBOO follows a two-tier desktop architecture: a Swing presentation layer made up of JFrame forms in the `proyecto_final` package sits directly on top of a set of plain Java domain classes in the `Clases` package, with db4o providing transparent object persistence to a `.yap` binary file on disk. There is no service layer, no DAO abstraction, and no intermediate query language — each form opens the `ObjectContainer`, interacts with stored objects, and closes the container when done.
+
+## Package Structure
+
+The repository contains two NetBeans projects plus one lightweight stub. The full layout is:
+
+```text
+orientado_objetos/
+├── src/
+│   ├── Clases/              # Domain model (POJOs)
+│   │   ├── Persona.java
+│   │   ├── Organizador.java
+│   │   ├── Patrocinador.java
+│   │   ├── Comerciantes.java
+│   │   ├── Personal.java
+│   │   ├── Publico.java
+│   │   ├── Ciudad.java
+│   │   ├── Departamento.java
+│   │   ├── Direccion.java
+│   │   ├── Puesto.java
+│   │   ├── Evento.java
+│   │   ├── Agenda.java
+│   │   └── Validaciones.java
+│   └── proyecto_final/      # Swing GUI forms
+│       ├── Inicio.java                  # Entry point / welcome screen
+│       ├── Proyecto_final.java          # Main class (launches Inicio)
+│       ├── Login_Administradoor.java
+│       ├── Login_Organizador.java
+│       ├── Menu_Administradorr.java
+│       ├── MenuOrganizador.java
+│       ├── Menu_Publico.java
+│       ├── Crud_Evento.java
+│       ├── Cruds_Eventos.java
+│       ├── Crud_Organizador.java
+│       ├── Crud_ModOrganizador.java
+│       ├── Crud_Comerciantes.java
+│       ├── Crud_Patrocinado.java
+│       ├── Crud_Puestos.java
+│       ├── Crud_Departamento.java
+│       ├── Crud_Ubicacion.java
+│       ├── Cruds_Personal.java
+│       ├── AceptarSolicitud.java
+│       ├── Asignar_Credencialess.java
+│       ├── ConsultarOrganizador.java
+│       ├── EliminarOrganizador.java
+│       ├── ReporteOrganizador.java
+│       ├── ReporteOrganizadores.java
+│       ├── Encuestaa_Organizor.java
+│       ├── Info_Administrador.java
+│       ├── Info_Organizador.java
+│       ├── Blog.java
+│       ├── Comerciante.java
+│       └── Publico.java
+├── Trabajo_db4o/            # Standalone db4o demo module
+│   └── src/trabajo_db4o/
+│       ├── Trabajo_db4o.java
+│       └── Empleados.java
+└── nbproject/               # NetBeans project metadata
+    └── project.xml
+```
+
+## Layers
+
+DBOO is composed of three clearly separated layers:
+
+**1. Presentation — Swing GUI Forms**
+
+All user interaction is handled by `javax.swing.JFrame` subclasses in the `proyecto_final` package. Every form is designed with the NetBeans Form Editor (each `.java` file has a paired `.form` XML descriptor), which generates the `initComponents()` method marked with the `//GEN-BEGIN:initComponents` / `//GEN-END:initComponents` guards. Developers must not edit the generated section; custom logic lives in action listener methods outside those guards.
+
+The `Inicio` class is the welcome screen and the single entry point. It exposes three navigation paths via its menu bar:
+- **INICIO COMO: → Administrador → Iniciar sesión** — opens `Login_Administradoor`
+- **INICIO COMO: → Organizadores → Iniciar sesión** — opens `Login_Organizador`
+- **SOLICITAR PUESTO → Crear Cuenta** — opens the `Comerciante` registration form
+
+**2. Domain Model — Plain Java Classes in `Clases`**
+
+All persistent entities are plain Java classes (POJOs) with no annotations, no XML mappings, and no special interfaces. db4o stores whatever is reachable from the object graph. Fields are kept private with standard getters and setters. The `Validaciones` utility class provides shared input-validation logic used across forms.
+
+**3. Persistence — db4o `ObjectContainer`**
+
+Every form that reads or writes data opens the `ObjectContainer` directly using the static path stored in `Inicio.direccion`, performs its operation, and then closes the container. No connection pool or session management is needed — db4o handles file locking internally.
+
+## Inheritance Hierarchy
+
+All person-type domain classes extend the base `Persona` class, which defines the shared fields `cedula`, `nombre`, `apellido`, `telefono`, `correo`, `direccion`, `celular`, `fecchaNaci`, and `genero`:
+
+```text
+Persona
+├── Organizador
+├── Patrocinador
+├── Comerciantes
+├── Personal
+└── Publico
+```
+
+Because db4o stores the entire object — including inherited fields — no join table or discriminator column is required. A query against `Persona.class` returns all subtypes; a query against `Organizador.class` returns only organizers.
+
+## db4o Persistence Pattern
+
+The canonical db4o usage is demonstrated in `Trabajo_db4o/src/trabajo_db4o/Trabajo_db4o.java`:
+
+```java
+ObjectContainer base = Db4o.openFile(direccion);
+
+// Store a new object
+CrearEmpleado(base, "0106170129", "Anthony", "Fajardo",
+    "mauricio.2004@gmail.cs", "0987654321", "12/01/2010",
+    " ", "fiestas", "001", 450.0, 5);
+
+base.close();
+```
+
+The `CrearEmpleado` helper instantiates the domain object and calls `base.set(empleado1)` to persist it:
+
+```java
+public static void CrearEmpleado(ObjectContainer base,
+        String cedula_empleado, String nombre_empleado,
+        String apellido_empleado, String correo, String telefono,
+        String fecha_contratacion, String cedula_jefe, String comicion,
+        String cod_trabajo, double salario, int id_departamento) {
+
+    Empleados empleado1 = new Empleados(cedula_empleado, nombre_empleado,
+        apellido_empleado, correo, telefono, fecha_contratacion,
+        cedula_jefe, comicion, cod_trabajo, salario, id_departamento);
+
+    base.set(empleado1);
+}
+```
+
+<Tip>
+  All CRUD forms in the `proyecto_final` package follow the same three-step pattern: open the `ObjectContainer` with `Db4o.openFile(Inicio.direccion)`, perform query/store/delete operations on the container, then call `base.close()`. Forgetting to call `close()` will leave the `.yap` file locked and prevent subsequent opens.
+</Tip>

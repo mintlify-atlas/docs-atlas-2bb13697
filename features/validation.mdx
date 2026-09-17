@@ -1,0 +1,130 @@
+---
+title: "Input Validation Methods in DBOO"
+sidebarTitle: "Validation"
+description: "The Validaciones class provides static and instance methods to validate cédulas, emails, dates, passwords, IDs, and other common input patterns."
+---
+
+DBOO centralizes all input validation in the `Validaciones` class (`src/Clases/Validaciones.java`). Every CRUD form calls these methods before persisting data to the db4o `ObjectContainer`. The class provides both static methods (callable without instantiation) and instance methods, and uses `java.util.regex.Pattern` / `Matcher` throughout to enforce consistent formats. If a method returns `false`, the calling form shows a `JOptionPane` error dialog and aborts the save or update operation.
+
+## All validation methods
+
+| Method | Signature | Validates | Pattern / Logic |
+|---|---|---|---|
+| `ValidarCedula` (static) | `static boolean ValidarCedula(String)` | 10-digit national ID | `[0-9]{10}` |
+| `validarCedula` (instance) | `boolean validarCedula(String)` | 10-digit national ID | `[0-9]{10}` |
+| `ValidarNomApe` | `boolean ValidarNomApe(String)` | Names and surnames | `[A-Za-z\s]{3,30}` |
+| `ValidarId` | `boolean ValidarId(String)` | Structured ID codes | `[A-Z]{3}-\d{3}` (e.g. `ASS-123`) |
+| `ValidarCiudad` | `boolean ValidarCiudad(String)` | City names | `[A-Za-z\s]*` |
+| `ValidarCorreo` | `boolean ValidarCorreo(String)` | Email addresses | Full RFC-style regex (see below) |
+| `ValidarFechaNacimiento` | `boolean ValidarFechaNacimiento(int, int, int)` | Day / month / year | Leap-year-aware calendar logic |
+| `ValidarEntero` | `boolean ValidarEntero(String)` | Integer strings | `[0-9]+` |
+| `ValidarGenero` | `boolean ValidarGenero(String)` | Gender codes | `"H"` or `"M"` (case-insensitive) |
+| `validarDouble` | `boolean validarDouble(String)` | Decimal numbers | `\d{1,3}(\.\d+)?` |
+| `validarFecha` | `boolean validarFecha(String)` | Date strings | `yyyy-MM-dd` format |
+| `validarContrasena` | `boolean validarContrasena(String)` | Passwords | Min 8 chars, ≥1 uppercase, ≥1 lowercase, ≥1 digit |
+| `ValidarContenido` | `boolean ValidarContenido(String)` | Alphanumeric text | `^[A-Za-z0-9\s]+$` |
+| `ValidarPuntuacion` | `boolean ValidarPuntuacion(String)` | Score 0–100 | `^(?:100|[0-9]{1,2})$` |
+| `validarPlaca` | `boolean validarPlaca(String)` | Vehicle licence plates | `^[A-Z]{3}-[0-9]{4}` |
+
+<Note>
+  The static `ValidarCedula` method can be called directly as `Validaciones.ValidarCedula(input)` without instantiating the class. This is the pattern used in most GUI forms where a quick null/format check is needed before opening a full db4o query. All other methods require an instance: `new Validaciones().ValidarCorreo(input)`.
+</Note>
+
+## Method details and source
+
+### Password validation
+
+The password must be at least eight characters long and contain at least one lowercase letter, one uppercase letter, and one digit. The regex uses lookaheads to enforce all three character-class requirements independently of their order.
+
+```java
+public boolean validarContrasena(String contrasena) {
+    // La contraseña debe tener al menos 8 caracteres
+    // y contener al menos una letra mayúscula, una letra minúscula y un número
+    String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+    return contrasena.matches(regex);
+}
+```
+
+### Email validation
+
+Email addresses are validated against a compiled `Pattern` that accepts standard RFC-style addresses. The pattern allows plus signs and dots in the local part, standard domain segments, and a TLD of up to 30 characters.
+
+```java
+public boolean ValidarCorreo(String mail) {
+    Pattern pattern = Pattern.compile(
+        "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{1,30})$");
+    Matcher matcher = pattern.matcher(mail);
+    return matcher.find();
+}
+```
+
+### Date string validation
+
+Date strings entered as free text (e.g. from a formatted date picker) must match the `yyyy-MM-dd` pattern. The method trims whitespace before matching.
+
+```java
+public boolean validarFecha(String cadenaFecha) {
+    cadenaFecha = cadenaFecha.trim();
+    String patronFecha = "\\d{4}-\\d{2}-\\d{2}";
+    Pattern patron = Pattern.compile(patronFecha);
+    Matcher matcher = patron.matcher(cadenaFecha);
+    return matcher.matches();
+}
+```
+
+### Birth-date calendar validation
+
+`ValidarFechaNacimiento` accepts the day, month, and year as separate integers and applies leap-year-aware bounds checking — February allows up to 29 days on leap years, 28 on others. April, June, September, and November allow up to 30 days; all remaining months allow up to 31.
+
+```java
+public boolean ValidarFechaNacimiento(int dia, int mes, int anio) {
+    if (mes >= 1 && mes <= 12) {
+        if (mes == 2) {
+            if ((anio % 4 == 0 && anio % 100 != 0) || anio % 400 == 0) {
+                return dia >= 1 && dia <= 29;
+            } else {
+                return dia >= 1 && dia <= 28;
+            }
+        } else {
+            if (mes == 4 || mes == 6 || mes == 9 || mes == 11) {
+                return dia >= 1 && dia <= 30;
+            } else {
+                return dia >= 1 && dia <= 31;
+            }
+        }
+    }
+    return false;
+}
+```
+
+### Usage example in a CRUD form
+
+The following snippet from `Cruds_Personal.validarCampos()` shows the typical call pattern: instantiate `Validaciones`, check each field in sequence, and set a boolean flag that prevents the `store()` call if any check fails.
+
+```java
+public boolean validarCampos() {
+    Validaciones miValidaciones = new Validaciones();
+    boolean ban_confirmar = true;
+
+    if (CedulaPersonal.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese la cédula ");
+        ban_confirmar = false;
+    } else if (!miValidaciones.validarCedula(CedulaPersonal.getText())) {
+        JOptionPane.showMessageDialog(this, "Cédula incorrecta. Ingrese de nuevo");
+        ban_confirmar = false;
+    }
+
+    if (txtemail.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el correo ");
+        ban_confirmar = false;
+    } else if (!miValidaciones.ValidarCorreo(txtemail.getText())) {
+        JOptionPane.showMessageDialog(this, "Correo incorrecto. Ingrese de nuevo");
+        ban_confirmar = false;
+    }
+
+    // ... additional field checks ...
+
+    return ban_confirmar;
+}
+```

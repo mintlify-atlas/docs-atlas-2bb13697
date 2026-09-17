@@ -1,0 +1,145 @@
+---
+title: "Patrocinador: Event Sponsor Entity"
+sidebarTitle: "Patrocinador"
+description: "Patrocinador extends Persona and represents an event sponsor with a unique code, description, contact information, and social media details."
+---
+
+`Patrocinador` models a sponsor who provides financial or material support for an event. It extends `Persona` to inherit standard personal data and adds five domain-specific fields: a primary key code, a textual description of the sponsor, a contact string, social media handles or links, and a foreign key back to the associated `Persona` record. Patrocinador objects are persisted to db4o and managed through the sponsor CRUD form.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `Clases.Persona`              |
+| **Imports** | `java.util.Date`              |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Patrocinador()
+```
+
+Delegates to `super()`. All fields are `null`. Used by db4o during object reconstruction.
+
+### Full constructor
+
+```java
+public Patrocinador(
+    String codigo_patri,
+    String Descripcion_p,
+    String Contacto_p,
+    String Redes_Sociales,
+    String cedula_perso,
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+The first five parameters populate `Patrocinador`-specific fields; the remaining nine are forwarded to `super(cedula, nombre, ...)`.
+
+<ParamField path="codigo_patri" type="String" required>
+  Primary key. Unique sponsor identifier. Validated by `Validaciones.ValidarId()` — must match pattern `AAA-000`.
+</ParamField>
+
+<ParamField path="Descripcion_p" type="String" required>
+  A textual description of the sponsor — their brand, mission, or area of support.
+</ParamField>
+
+<ParamField path="Contacto_p" type="String" required>
+  Contact information for the sponsor (phone, email, or representative name). Complements the inherited `correo` and `telefono` fields.
+</ParamField>
+
+<ParamField path="Redes_Sociales" type="String" required>
+  Social media handles or profile URLs for the sponsor (e.g., Twitter, Instagram, LinkedIn).
+</ParamField>
+
+<ParamField path="cedula_perso" type="String" required>
+  Foreign key → `Persona.cedula`. Links this sponsor record to the underlying personal identity entry.
+</ParamField>
+
+<ParamField path="cedula" type="String" required>
+  Inherited: national 10-digit ID. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Inherited: first name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="apellido" type="String" required>
+  Inherited: last name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="telefono" type="String" required>
+  Inherited: landline phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="correo" type="String" required>
+  Inherited: email address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="direccion" type="String" required>
+  Inherited: address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="celular" type="String" required>
+  Inherited: mobile phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="fecchaNaci" type="java.util.Date" required>
+  Inherited: date of birth. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="genero" type="String" required>
+  Inherited: gender (`"H"` or `"M"`). Passed to `Persona` constructor.
+</ParamField>
+
+## Fields
+
+### Patrocinador-specific fields
+
+| Field            | Type     | Access    | Description                                                      |
+|------------------|----------|-----------|------------------------------------------------------------------|
+| `codigo_patri`   | `String` | `private` | Primary key. Unique sponsor code (format `AAA-000`).            |
+| `Descripcion_p`  | `String` | `private` | Description of the sponsor and their relationship to the event. |
+| `Contacto_p`     | `String` | `private` | Contact detail for the sponsor representative.                  |
+| `Redes_Sociales` | `String` | `private` | Social media handles or URLs.                                   |
+| `cedula_perso`   | `String` | `private` | Foreign key → `Persona.cedula`.                                 |
+
+### Inherited fields (from Persona)
+
+See the [Persona reference](/reference/persona) for the nine inherited fields.
+
+## Getters and setters
+
+| Method                                        | Returns / Parameter | Description                      |
+|-----------------------------------------------|---------------------|----------------------------------|
+| `getCodigo_patri()`                           | `String`            | Returns `codigo_patri`.          |
+| `setCodigo_patri(String codigo_patri)`        | `void`              | Sets `codigo_patri`.             |
+| `getDescripcion_p()`                          | `String`            | Returns `Descripcion_p`.         |
+| `setDescripcion_p(String Descripcion_p)`      | `void`              | Sets `Descripcion_p`.            |
+| `getContacto_p()`                             | `String`            | Returns `Contacto_p`.            |
+| `setContacto_p(String Contacto_p)`            | `void`              | Sets `Contacto_p`.               |
+| `getRedes_Sociales()`                         | `String`            | Returns `Redes_Sociales`.        |
+| `setRedes_Sociales(String Redes_Sociales)`    | `void`              | Sets `Redes_Sociales`.           |
+| `getCedula_perso()`                           | `String`            | Returns `cedula_perso`.          |
+| `setCedula_perso(String cedula_perso)`        | `void`              | Sets `cedula_perso`.             |
+
+All nine `Persona` getters and setters are also available through inheritance.
+
+<Note>
+  `Patrocinador` does not override `toString()`. When printing a `Patrocinador` instance, Java calls the inherited `Persona.toString()`, which displays only the nine base fields. To display sponsor-specific data in logs, call the individual getters explicitly.
+</Note>
+
+<Tip>
+  To retrieve all sponsors for a given event from db4o, execute a query on `Patrocinador` objects and filter by the event code stored in the CRUD form. Since `Evento` fields are currently managed at the GUI layer, cross-referencing may require a join at the application level.
+</Tip>

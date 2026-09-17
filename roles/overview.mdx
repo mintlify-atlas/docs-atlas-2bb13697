@@ -1,0 +1,46 @@
+---
+title: "User Roles and Access in DBOO"
+sidebarTitle: "Overview"
+description: "DBOO supports three distinct user roles — Administrator, Organizer, and Public/Merchant — each with its own login flow and set of available operations."
+---
+
+DBOO implements role-based access through three separate login paths, each leading to a dedicated menu and set of CRUD forms. Roles are not selected from a shared login page — instead, each entry point is exposed directly from the main `Inicio` welcome screen, ensuring that users are routed to the correct authentication flow before they ever see a form.
+
+## Role comparison
+
+| Role | Entry Point | Login Required | Key Capabilities |
+|---|---|---|---|
+| Administrator | Menu > **INICIO COMO:** > Administrador > Iniciar sesión | Yes (`Login_Administradoor`) | Manage all organizers, departments, global data |
+| Organizer | Menu > **INICIO COMO:** > Organizadores > Iniciar sesión | Yes (`Login_Organizador`) | Manage own events, staff, sponsors, merchants |
+| Public User | **CREAR CUENTA** button | Registration only | Browse events, register, comment |
+| Merchant | **SOLICITAR PUESTO** > Crear Cuenta | Registration only | Apply for a commercial booth at an event |
+
+<Note>
+  The main `Inicio.java` screen exposes a menu bar with **"INICIO COMO:"** containing two submenus — **Administrador** and **Organizadores** — each with an **"Iniciar sesión"** item. Clicking either item opens the corresponding login `JFrame` and disposes the welcome screen. The **CREAR CUENTA** button on the welcome panel opens the `Publico` registration form, while the **SOLICITAR PUESTO** menu opens the `Comerciante` registration form.
+</Note>
+
+## Explore each role
+
+<CardGroup cols={3}>
+  <Card
+    title="Administrator"
+    icon="shield"
+    href="/roles/administrator"
+  >
+    Full system access — manage organizers, departments, credentials, and generate reports.
+  </Card>
+  <Card
+    title="Organizer"
+    icon="calendar"
+    href="/roles/organizer"
+  >
+    Manage events, contracted staff, sponsors, and merchant booths after authenticating with admin-assigned credentials.
+  </Card>
+  <Card
+    title="Public / Merchant"
+    icon="users"
+    href="/roles/public-merchant"
+  >
+    Self-service registration paths for event attendees and commercial booth applicants.
+  </Card>
+</CardGroup>

@@ -1,0 +1,88 @@
+---
+title: "Evento: Event Entity Class in DBOO"
+sidebarTitle: "Evento"
+description: "The Evento class is the central event entity in DBOO. It is an extensible scaffold class managed through the Crud_Evento and Cruds_Eventos GUI forms."
+---
+
+`Evento` is the core domain class for events in DBOO. The class is defined in package `Clases` and is currently an extensible scaffold — event attributes are captured through the `Crud_Evento` and `Cruds_Eventos` Swing forms bound to the db4o `ObjectContainer`. Rather than storing typed Java fields, the current implementation delegates all event data management to the GUI layer, keeping the class open for future extension without breaking existing persisted data.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `java.lang.Object` (root)     |
+
+## Class source
+
+```java
+package Clases;
+
+public class Evento {
+    
+}
+```
+
+The class body is intentionally empty at this stage of the project. It acts as a typed placeholder in the db4o schema — objects of type `Evento` are identifiable and queryable in the object database even before typed fields are committed to the source file.
+
+## Fields captured in the GUI
+
+The `Crud_Evento` form captures the following event attributes through labelled Swing components. These are the logical fields of an `Evento` record as experienced by the user:
+
+| GUI Label          | Logical Field          | Input Type       | Description                                      |
+|--------------------|------------------------|------------------|--------------------------------------------------|
+| Código Evento      | Event identifier       | Text field       | Unique code identifying the event.               |
+| Nombre             | Event name             | Text field       | Human-readable name of the event.                |
+| Tipo de Evento     | Event type             | Dropdown (combo) | Category or kind of event (e.g., concert, fair). |
+| Fecha de Inicio    | Start date             | Text / date field | Date when the event begins.                     |
+| Fecha de Fin       | End date               | Text / date field | Date when the event ends.                       |
+| Descripción        | Event description      | Text area        | Detailed free-text description of the event.     |
+
+## Related forms
+
+| Form              | Role                  | Description                                                                                  |
+|-------------------|-----------------------|----------------------------------------------------------------------------------------------|
+| `Crud_Evento`     | Administrator form    | Full CRUD management of events. Accessible to admin users; writes directly to db4o.         |
+| `Cruds_Eventos`   | Organizer form        | Organizer-facing event view. Allows the logged-in organizer to manage their assigned events. |
+
+<Note>
+  To add typed fields to `Evento`, extend the class in `src/Clases/Evento.java` following the pattern established by `Persona` and its subclasses: declare `private` fields, generate a full constructor, and provide public getters and setters. The db4o object database will automatically persist new fields once objects are created with the updated constructor.
+</Note>
+
+## Extension example
+
+The following snippet illustrates how to evolve `Evento` with typed fields consistent with the data already captured in the GUI:
+
+```java
+package Clases;
+
+import java.util.Date;
+
+public class Evento {
+
+    private String codigo_evento;   // primary key
+    private String nombre;
+    private String tipo_evento;
+    private Date   fecha_inicio;
+    private Date   fecha_fin;
+    private String descripcion;
+
+    public Evento() {}
+
+    public Evento(String codigo_evento, String nombre, String tipo_evento,
+                  Date fecha_inicio, Date fecha_fin, String descripcion) {
+        this.codigo_evento = codigo_evento;
+        this.nombre        = nombre;
+        this.tipo_evento   = tipo_evento;
+        this.fecha_inicio  = fecha_inicio;
+        this.fecha_fin     = fecha_fin;
+        this.descripcion   = descripcion;
+    }
+
+    // getters and setters ...
+}
+```
+
+<Tip>
+  After adding typed fields, update the `Crud_Evento` form to bind UI components to the new getters and setters. Existing db4o records without the new fields will return `null` for those fields until they are re-saved.
+</Tip>

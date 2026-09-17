@@ -1,0 +1,47 @@
+---
+title: "Administrator Role: System-Wide Management in DBOO"
+sidebarTitle: "Administrator"
+description: "The Administrator role in DBOO provides full access to organizer management, department configuration, credential assignment, and system reports."
+---
+
+The Administrator role has the broadest access in DBOO. After authenticating through `Login_Administradoor`, the admin lands on `Menu_Administradorr`, which provides access to all system-level operations. The admin dashboard uses a `CardLayout`-based dynamic panel (`pnldinamico`), so each sidebar button swaps the active form in place without opening a new window.
+
+## Authentication
+
+<Steps>
+  <Step title="Navigate to the administrator login">
+    From the `Inicio` welcome screen, open the menu bar and select **INICIO COMO: > Administrador > Iniciar sesión**. This action disposes the `Inicio` window and opens `Login_Administradoor`.
+  </Step>
+  <Step title="Enter credentials">
+    `Login_Administradoor` is a `JFrame` containing a `txtUsuario` text field and a `txtPassword` password field. The `validarU_Admnistrador()` method compares the entered values against the hardcoded system credentials. If either field is empty, a dialog is shown; if the credentials do not match, an error message is displayed.
+  </Step>
+  <Step title="Access the admin dashboard">
+    On successful authentication, `Login_Administradoor` disposes itself and opens `Menu_Administradorr`. The dashboard initialises with the `Info_Administrador` panel loaded into the dynamic content area.
+  </Step>
+</Steps>
+
+## Available operations
+
+`Menu_Administradorr` exposes the following CRUD forms via its sidebar buttons. Each button loads the corresponding panel into `pnldinamico` using `CardLayout`.
+
+| Form class | Button label | Purpose |
+|---|---|---|
+| `Crud_Organizador` | Ingresar Organizador | Create and list organizers |
+| `ConsultarOrganizador` | Consultar Organizador | Query and view organizer records |
+| `Crud_ModOrganizador` | Modificar Organizador | Modify existing organizer details |
+| `EliminarOrganizador` | Eliminar Organizador | Delete organizer records |
+| `ReporteOrganizador` | Reporte Organizador | Generate multi-organizer reports |
+| `Asignar_Credencialess` | Asignar Credenciales | Assign login credentials to organizers |
+| `AceptarSolicitud` | — | Accept booth/participation requests from merchants |
+| `Crud_Departamento` | — | Manage departments |
+| `Crud_Ubicacion` | — | Manage locations and addresses |
+| `Crud_Puestos` | — | Manage commercial booth records |
+| `Info_Administrador` | — | Administrator profile (default landing panel) |
+
+<Tip>
+  The admin dashboard (`Menu_Administradorr`) acts as a navigation hub — each sidebar button calls `pnldinamico.add(panel, "crud")` followed by `vista.show(pnldinamico, "crud")`, which swaps the visible panel inside the `CardLayout` without navigating away or spawning an additional window. Changes to any form are immediately visible in the same dashboard frame.
+</Tip>
+
+## Back navigation
+
+The home icon button (`jButton1`) in `Menu_Administradorr` disposes the dashboard and returns the user to the `Inicio` welcome screen, providing a clean exit path from the admin session.

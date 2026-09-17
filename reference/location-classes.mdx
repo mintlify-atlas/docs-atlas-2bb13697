@@ -1,0 +1,293 @@
+---
+title: "Location Classes: Ciudad, Direccion, Departamento, Puesto"
+sidebarTitle: "Location Classes"
+description: "Four supporting classes model geographic and organizational context in DBOO: Ciudad for cities, Direccion for addresses, Departamento for departments, and Puesto for commercial booths."
+---
+
+DBOO includes four compact supporting classes that capture geographic and structural information about event locations and organizational units. `Ciudad` describes a city within a country and region. `Direccion` stores a postal address using two street fields. `Departamento` records an internal department with a name and description. `Puesto` defines a named commercial booth that can be assigned to a merchant (`Comerciantes`). All four classes live in the `Clases` package and are stored as independent objects in the db4o database.
+
+---
+
+## Ciudad
+
+`Ciudad` models a city associated with an event location. It carries a country reference (`Pais_C`), a city name, and a regional classification.
+
+### Package
+
+```java
+package Clases;
+```
+
+### Constructors
+
+```java
+public Ciudad()
+```
+
+No-argument constructor. All fields default to `null`.
+
+```java
+public Ciudad(
+    String Codigo_ciudad,
+    String Pais_C,
+    String nombre,
+    String region
+)
+```
+
+<ParamField path="Codigo_ciudad" type="String" required>
+  Primary key. Unique city identifier.
+</ParamField>
+
+<ParamField path="Pais_C" type="String" required>
+  Name or ISO code of the country the city belongs to.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Name of the city.
+</ParamField>
+
+<ParamField path="region" type="String" required>
+  Region, province, or state the city is located in.
+</ParamField>
+
+### Fields
+
+| Field            | Type     | Access    | Description                           |
+|------------------|----------|-----------|---------------------------------------|
+| `Codigo_ciudad`  | `String` | `private` | Primary key. Unique city code.       |
+| `Pais_C`         | `String` | `private` | Country name or code.                |
+| `nombre`         | `String` | `private` | City name.                           |
+| `region`         | `String` | `private` | Region or province.                  |
+
+### Getters and setters
+
+| Method                                   | Returns / Parameter | Description                   |
+|------------------------------------------|---------------------|-------------------------------|
+| `getCodigo_ciudad()`                     | `String`            | Returns `Codigo_ciudad`.      |
+| `setCodigo_ciudad(String Codigo_ciudad)` | `void`              | Sets `Codigo_ciudad`.         |
+| `getPais_C()`                            | `String`            | Returns `Pais_C`.             |
+| `setPais_C(String Pais_C)`               | `void`              | Sets `Pais_C`.                |
+| `getNombre()`                            | `String`            | Returns `nombre`.             |
+| `setNombre(String nombre)`               | `void`              | Sets `nombre`.                |
+| `getRegion()`                            | `String`            | Returns `region`.             |
+| `setRegion(String region)`               | `void`              | Sets `region`.                |
+
+<Note>
+  `Ciudad` does not override `toString()`. To display a city record in logs, access individual getters or format the output manually.
+</Note>
+
+---
+
+## Direccion
+
+`Direccion` stores a physical address composed of two street references — a primary street and a secondary (cross) street.
+
+### Package
+
+```java
+package Clases;
+```
+
+### Constructors
+
+```java
+public Direccion()
+```
+
+No-argument constructor. All fields default to `null`.
+
+```java
+public Direccion(
+    String Codigo_direccion,
+    String calle_principal,
+    String calle_secundaria
+)
+```
+
+<ParamField path="Codigo_direccion" type="String" required>
+  Primary key. Unique address identifier.
+</ParamField>
+
+<ParamField path="calle_principal" type="String" required>
+  Main street name or number of the address.
+</ParamField>
+
+<ParamField path="calle_secundaria" type="String" required>
+  Secondary or cross street used to pinpoint the exact location.
+</ParamField>
+
+### Fields
+
+| Field               | Type     | Access    | Description                          |
+|---------------------|----------|-----------|--------------------------------------|
+| `Codigo_direccion`  | `String` | `private` | Primary key. Unique address code.   |
+| `calle_principal`   | `String` | `private` | Main street name or number.         |
+| `calle_secundaria`  | `String` | `private` | Cross or secondary street.          |
+
+### Getters and setters
+
+| Method                                            | Returns / Parameter | Description                      |
+|---------------------------------------------------|---------------------|----------------------------------|
+| `getCodigo_direccion()`                           | `String`            | Returns `Codigo_direccion`.      |
+| `setCodigo_direccion(String Codigo_direccion)`    | `void`              | Sets `Codigo_direccion`.         |
+| `getCalle_principal()`                            | `String`            | Returns `calle_principal`.       |
+| `setCalle_principal(String calle_principal)`      | `void`              | Sets `calle_principal`.          |
+| `getCalle_secundaria()`                           | `String`            | Returns `calle_secundaria`.      |
+| `setCalle_secundaria(String calle_secundaria)`    | `void`              | Sets `calle_secundaria`.         |
+
+### toString()
+
+```java
+@Override
+public String toString() {
+    return "Direccion{" + "Codigo_direccion=" + Codigo_direccion
+        + ", calle_principal=" + calle_principal
+        + ", calle_secundaria=" + calle_secundaria + '}';
+}
+```
+
+---
+
+## Departamento
+
+`Departamento` models an internal organisational department. Staff members (`Personal`) are assigned to a department by name.
+
+### Package
+
+```java
+package Clases;
+```
+
+### Constructors
+
+```java
+public Departamento()
+```
+
+No-argument constructor. All fields default to `null`.
+
+```java
+public Departamento(
+    String id_departamento,
+    String nombre,
+    String descripcion
+)
+```
+
+<ParamField path="id_departamento" type="String" required>
+  Primary key. Unique department identifier.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Name of the department (e.g., Logistics, Security, Catering).
+</ParamField>
+
+<ParamField path="descripcion" type="String" required>
+  A brief description of the department's function or responsibilities.
+</ParamField>
+
+### Fields
+
+| Field              | Type     | Access    | Description                          |
+|--------------------|----------|-----------|--------------------------------------|
+| `id_departamento`  | `String` | `private` | Primary key. Unique department ID.  |
+| `nombre`           | `String` | `private` | Department name.                    |
+| `descripcion`      | `String` | `private` | Description of the department.      |
+
+### Getters and setters
+
+| Method                                         | Returns / Parameter | Description                        |
+|------------------------------------------------|---------------------|------------------------------------|
+| `getId_departamento()`                         | `String`            | Returns `id_departamento`.         |
+| `setId_departamento(String id_departamento)`   | `void`              | Sets `id_departamento`.            |
+| `getNombre()`                                  | `String`            | Returns `nombre`.                  |
+| `setNombre(String nombre)`                     | `void`              | Sets `nombre`.                     |
+| `getDescripcion()`                             | `String`            | Returns `descripcion`.             |
+| `setDescripcion(String descripcion)`           | `void`              | Sets `descripcion`.                |
+
+### toString()
+
+```java
+@Override
+public String toString() {
+    return "Departamento{" + "id_departamento=" + id_departamento
+        + ", nombre=" + nombre
+        + ", descripcion=" + descripcion + '}';
+}
+```
+
+---
+
+## Puesto
+
+`Puesto` defines a named commercial booth at an event. A `Comerciantes` (merchant) is assigned to a booth via the `codigo_puesto` foreign key. Each booth has a name, a description, and a type classification.
+
+### Package
+
+```java
+package Clases;
+```
+
+### Constructors
+
+```java
+public Puesto()
+```
+
+No-argument constructor. All fields default to `null`.
+
+```java
+public Puesto(
+    String Codigo_puesto,
+    String NombrePuesto,
+    String DescripcionPuesto,
+    String tipo_puesto
+)
+```
+
+<ParamField path="Codigo_puesto" type="String" required>
+  Primary key. Unique booth identifier. Referenced by `Comerciantes.codigo_puesto`.
+</ParamField>
+
+<ParamField path="NombrePuesto" type="String" required>
+  Display name of the booth (e.g., "Puesto A1", "Food Stand 3").
+</ParamField>
+
+<ParamField path="DescripcionPuesto" type="String" required>
+  Description of the booth's purpose, size, or location within the event venue.
+</ParamField>
+
+<ParamField path="tipo_puesto" type="String" required>
+  Category of the booth (e.g., food, crafts, information, merchandise).
+</ParamField>
+
+### Fields
+
+| Field               | Type     | Access    | Description                              |
+|---------------------|----------|-----------|------------------------------------------|
+| `Codigo_puesto`     | `String` | `private` | Primary key. Unique booth code.         |
+| `NombrePuesto`      | `String` | `private` | Name of the booth.                      |
+| `DescripcionPuesto` | `String` | `private` | Description of the booth.               |
+| `tipo_puesto`       | `String` | `private` | Booth category or type classification.  |
+
+### Getters and setters
+
+| Method                                          | Returns / Parameter | Description                        |
+|-------------------------------------------------|---------------------|------------------------------------|
+| `getCodigo_puesto()`                            | `String`            | Returns `Codigo_puesto`.           |
+| `setCodigo_puesto(String Codigo_puesto)`        | `void`              | Sets `Codigo_puesto`.              |
+| `getNombrePuesto()`                             | `String`            | Returns `NombrePuesto`.            |
+| `setNombrePuesto(String NombrePuesto)`          | `void`              | Sets `NombrePuesto`.               |
+| `getDescripcionPuesto()`                        | `String`            | Returns `DescripcionPuesto`.       |
+| `setDescripcionPuesto(String DescripcionPuesto)`| `void`              | Sets `DescripcionPuesto`.          |
+| `getTipo_puesto()`                              | `String`            | Returns `tipo_puesto`.             |
+| `setTipo_puesto(String tipo_puesto)`            | `void`              | Sets `tipo_puesto`.                |
+
+<Note>
+  `Puesto` does not override `toString()`. Use the individual getters to format booth output in reports or list views.
+</Note>
+
+<Tip>
+  To look up the booth assigned to a given merchant, retrieve the `Comerciantes` object, call `getCodigo_puesto()`, and then query db4o for a `Puesto` where `Codigo_puesto` equals that value.
+</Tip>

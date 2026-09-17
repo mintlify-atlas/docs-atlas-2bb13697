@@ -1,0 +1,95 @@
+---
+title: "Managing Personnel and Sponsors in DBOO"
+sidebarTitle: "Personnel & Sponsors"
+description: "Track contracted staff with contract dates and performance ratings, and manage event sponsors with contact details and social media links."
+---
+
+DBOO tracks two categories of supporting participants: **Personnel** (contracted event staff) and **Patrocinadores** (sponsors). Each has a dedicated CRUD form and a rich set of fields capturing contract terms and contact details. Both entity classes extend the shared `Persona` base class, so every staff member and sponsor record automatically carries common personal information — name, identity number, email, phone, address, and date of birth — alongside their role-specific attributes.
+
+## Personnel management
+
+Personnel records are managed through the `Cruds_Personal` form, which is accessible to organizers from `MenuOrganizador`. The form queries and stores `Personal` objects in the db4o `ObjectContainer`.
+
+### Personal class fields
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_perso` | `String` | Staff member code (PK, auto-generated as zero-padded integer) |
+| `Tipo_personal` | `String` | Staff type / role |
+| `Departamento_p` | `String` | Assigned department (selected from `JComboBox`) |
+| `contanto_p` | `String` | Additional contact information |
+| `Calificacion_p` | `String` | Performance rating |
+| `Fecha_contrato_inicio` | `java.util.Date` | Contract start date |
+| `Fecha_contrato_fin` | `java.util.Date` | Contract end date |
+| `cedula_perso` | `String` | FK — links to the associated `Persona` record |
+| `cod_evento` | `String` | FK — links to the associated `Evento` record |
+
+Inherited `Persona` fields (cedula, nombre, apellido, telefono, correo, direccion, celular, fecchaNaci, genero) are also present on every `Personal` instance.
+
+### Full constructor
+
+```java
+public Personal(String codigo_perso, String Tipo_personal,
+                String Departamento_p, String contanto_p,
+                String Calificacion_p, Date Fecha_contrato_inicio,
+                Date Fecha_contrato_fin, String cedula_perso,
+                String cod_evento, String cedula, String nombre,
+                String apellido, String telefono, String correo,
+                String direccion, String celular, Date fecchaNaci,
+                String genero)
+```
+
+### Form behaviour
+
+The `Cruds_Personal` form auto-generates `codigo_perso` by querying the highest existing code in the `ObjectContainer`, incrementing it by one, and formatting the result with three leading zeros (e.g. `001`, `002`, …). Validation is performed by `Validaciones` before any `store()` call — see the [Validation](/features/validation) page for details.
+
+The CRUD buttons behave as follows:
+
+| Button | Label | Action |
+|---|---|---|
+| `jButton1` | GUARDAR | Creates a new `Personal` and calls `base.store()` |
+| `jButton2` | MODIFICAR | Retrieves the existing object by cédula and calls `base.set()` |
+| `jButton3` | ELIMINAR | Queries by cédula, confirms with a dialog, then calls `base.delete()` |
+| `jButton4` | REPORTE | Refreshes the JTable from all `Personal` objects in the container |
+
+## Sponsor management
+
+Sponsor records are managed through the `Crud_Patrocinado` form. Like `Cruds_Personal`, it is a `JPanel` embedded in the organizer workspace.
+
+### Patrocinador class fields
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_patri` | `String` | Sponsor code (PK) |
+| `Descripcion_p` | `String` | Sponsor description (entered via `JTextArea`) |
+| `Contacto_p` | `String` | Primary contact details |
+| `Redes_Sociales` | `String` | Social media links or handles |
+| `cedula_perso` | `String` | FK — links to the associated `Persona` record |
+
+Inherited `Persona` fields (cedula, nombre, apellido, telefono, correo, direccion, celular, fecchaNaci, genero) are also present.
+
+### Full constructor
+
+```java
+public Patrocinador(String codigo_patri, String Descripcion_p,
+                    String Contacto_p, String Redes_Sociales,
+                    String cedula_perso, String cedula, String nombre,
+                    String apellido, String telefono, String correo,
+                    String direccion, String celular, Date fecchaNaci,
+                    String genero)
+```
+
+### JTable columns
+
+The sponsor table (`jTable1` in `Crud_Patrocinado`) displays the following columns populated from the `ObjectContainer` at runtime:
+
+```
+Cédula | Nombre | Apellido | Teléfono | Email | Dirección | Celular
+Género | Cédula Persona | Código | Descripción | Redes Sociales | Fecha de Nacimiento
+```
+
+The form also exposes a **REPORTE** button (`jButton4`) that refreshes the sponsor table with the latest data from the database.
+
+<Tip>
+  Sponsors inherit all `Persona` fields — name, email, phone — alongside their sponsor-specific contact and social media information. You only need to enter personal details once; the same `cedula` can be reused as the `cedula_perso` foreign key across multiple entity types.
+</Tip>

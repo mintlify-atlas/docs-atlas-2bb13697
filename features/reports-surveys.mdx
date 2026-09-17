@@ -1,0 +1,80 @@
+---
+title: "Reports and Surveys for Organizers in DBOO"
+sidebarTitle: "Reports & Surveys"
+description: "DBOO includes dedicated forms for generating organizer reports and collecting post-event survey responses to evaluate event performance."
+---
+
+DBOO provides two feedback and reporting tools: `ReporteOrganizador` for generating per-organizer activity reports, and `Encuestaa_Organizor` for collecting structured survey responses from organizers after events. Together they give organizers and administrators visibility into who ran which events and how those events were evaluated.
+
+<Note>
+  Reports in DBOO are rendered as Swing `JPanel` forms with data pulled from the db4o `ObjectContainer` at runtime. There is no PDF export — all data is displayed directly in the GUI inside a `JTable`. To capture report output, use your operating system's screenshot tools or a print-to-PDF driver pointed at the application window.
+</Note>
+
+## Organizer reports
+
+DBOO ships two separate report views depending on the user's role.
+
+<CardGroup cols={2}>
+  <Card title="Organizer Report" icon="file-lines">
+    Per-organizer event activity report. Accessible from `MenuOrganizador` via the `ReporteOrganizador` panel. Shows all `Organizador` records stored in the db4o `ObjectContainer` for the current session.
+  </Card>
+  <Card title="Multi-Organizer Report" icon="chart-bar">
+    Aggregate report across all organizers. Accessible from `Menu_Administradorr` via the `ReporteOrganizadores` panel. Provides administrators with a consolidated view of every organizer's details and budget.
+  </Card>
+</CardGroup>
+
+### ReporteOrganizador
+
+`ReporteOrganizador` is a `JPanel` that loads on construction (`initComponents()` calls `actualizarDatos()` in the constructor). It presents a full-width `JTable` (`jTableDatos`) populated with the following columns:
+
+```
+Código | Cédula | Nombre | Apellido | Celular | Teléfono
+Dirección | Género | Correo | Usuario | Contraseña | Presupuesto | Fecha de Nacimiento
+```
+
+Data is fetched by querying all `Organizador` objects from the db4o `ObjectContainer` and storing them in a static `ArrayList<Organizador>` (`listaagentes`). The **Actualizar Reporte** button (`btnActualizatDatos`) triggers `actualizarDatos()`, which clears the list, re-queries the database, and rebuilds the `DefaultTableModel`.
+
+```java
+public void actualizarDatos() {
+    ObjectContainer base = Db4o.openFile(Inicio.direccion);
+    AsignarRegistrosArray(base);
+    // rebuilds DefaultTableModel from listaagentes
+    base.close();
+}
+```
+
+### ReporteOrganizadores (administrator view)
+
+The administrator-facing report (`ReporteOrganizadores`) follows the same pattern but is accessible only from `Menu_Administradorr`. It provides an aggregate view across all organizer accounts in the system.
+
+## Surveys
+
+### Encuestaa_Organizor
+
+The survey form `Encuestaa_Organizor` is a `JPanel` accessible from `MenuOrganizador`. It collects structured post-event feedback from the organizer and supports full CRUD on survey objects stored in the db4o `ObjectContainer`.
+
+**Form fields:**
+
+| Field | Component | Description |
+|---|---|---|
+| Código Encuesta | `JTextField` | Unique survey identifier |
+| Tipo de Evento | `JComboBox` | Associates the survey with an event type |
+| Descripción | `JTextArea` | Free-text survey description or comments |
+| Fecha Inicio | `JDateChooser` | Survey period start date |
+| Fecha Fin | `JDateChooser` | Survey period end date |
+| Preguntas del Evento | _(label section)_ | Section heading for structured question entries |
+
+**Action buttons:**
+
+| Button | Label | Action |
+|---|---|---|
+| `jButton1` | GUARDAR | Stores a new survey object in the `ObjectContainer` |
+| `jButton2` | MODIFICAR | Updates the selected survey object |
+| `jButton3` | ELIMINAR | Removes the selected survey object |
+| `jButton4` | REPORTE | Refreshes the survey `JTable` |
+
+Survey responses are stored as objects in the db4o `ObjectContainer`, giving the same schemaless persistence as all other DBOO entities.
+
+## Blog
+
+The `Blog` form is a public-facing information screen that displays event information and announcements. It is accessible from both `MenuOrganizador` and `Menu_Publico`, allowing both logged-in organizers and unauthenticated public users to browse current event details and updates. The Blog does not offer write operations to public users — it is a read-only display panel backed by data in the db4o `ObjectContainer`.

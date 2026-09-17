@@ -1,0 +1,174 @@
+---
+title: "Personal: Contracted Staff Member Entity"
+sidebarTitle: "Personal"
+description: "Personal extends Persona and models a contracted event staff member with fields for role type, department, contract dates, performance rating, and event assignment."
+---
+
+`Personal` represents a contracted staff member working at an event. It extends `Persona` to inherit personal contact data and adds nine additional fields that describe the staff member's role, departmental assignment, contract period, performance rating, and the event to which they are assigned. Two constructors are provided — one that sets only the `Personal`-specific fields (without populating `Persona` fields), and one that sets all fields in a single call.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `Clases.Persona`              |
+| **Imports** | `Clases.Persona`, `java.util.Date` |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Personal()
+```
+
+Delegates to `super()`. All fields are `null`. Used by db4o during object reconstruction.
+
+### Partial constructor (Personal fields only)
+
+```java
+public Personal(
+    String codigo_perso,
+    String Tipo_personal,
+    String Departamento_p,
+    String contanto_p,
+    String Calificacion_p,
+    Date   Fecha_contrato_inicio,
+    Date   Fecha_contrato_fin,
+    String cedula_perso,
+    String cod_evento
+)
+```
+
+Sets the nine `Personal`-specific fields only. The inherited `Persona` fields (`cedula`, `nombre`, etc.) are **not** set by this constructor. This form is useful when the `Persona` base record already exists separately in db4o.
+
+<ParamField path="codigo_perso" type="String" required>
+  Primary key. Unique identifier for this staff member record.
+</ParamField>
+
+<ParamField path="Tipo_personal" type="String" required>
+  Role or type of staff (e.g., security, logistics, catering).
+</ParamField>
+
+<ParamField path="Departamento_p" type="String" required>
+  Name or code of the department this staff member belongs to.
+</ParamField>
+
+<ParamField path="contanto_p" type="String" required>
+  Contract number or contract reference for this staff member's engagement.
+</ParamField>
+
+<ParamField path="Calificacion_p" type="String" required>
+  Performance rating or qualification level. Validated by `Validaciones.ValidarPuntuacion()` — a numeric string from `0` to `100`.
+</ParamField>
+
+<ParamField path="Fecha_contrato_inicio" type="java.util.Date" required>
+  Contract start date.
+</ParamField>
+
+<ParamField path="Fecha_contrato_fin" type="java.util.Date" required>
+  Contract end date.
+</ParamField>
+
+<ParamField path="cedula_perso" type="String" required>
+  Foreign key → `Persona.cedula`. Links this staff record to the corresponding personal identity entry.
+</ParamField>
+
+<ParamField path="cod_evento" type="String" required>
+  Foreign key → `Evento`. Links this staff member to the event they are contracted for.
+</ParamField>
+
+### Full constructor (Personal fields + Persona fields)
+
+```java
+public Personal(
+    String codigo_perso,
+    String Tipo_personal,
+    String Departamento_p,
+    String contanto_p,
+    String Calificacion_p,
+    Date   Fecha_contrato_inicio,
+    Date   Fecha_contrato_fin,
+    String cedula_perso,
+    String cod_evento,
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+Calls `super(cedula, nombre, apellido, telefono, correo, direccion, celular, fecchaNaci, genero)` and then sets all nine `Personal`-specific fields. Use this constructor when creating a complete new staff record in a single step.
+
+## Fields
+
+### Personal-specific fields
+
+| Field                    | Type              | Access    | Description                                                     |
+|--------------------------|-------------------|-----------|-----------------------------------------------------------------|
+| `codigo_perso`           | `String`          | `private` | Primary key. Unique staff record identifier.                   |
+| `Tipo_personal`          | `String`          | `private` | Role type or category of the staff member.                     |
+| `Departamento_p`         | `String`          | `private` | Department the staff member is assigned to.                    |
+| `contanto_p`             | `String`          | `private` | Contract reference number. (`contanto` is preserved from source.) |
+| `Calificacion_p`         | `String`          | `private` | Performance rating (0–100).                                    |
+| `Fecha_contrato_inicio`  | `java.util.Date`  | `private` | Start date of the employment contract.                         |
+| `Fecha_contrato_fin`     | `java.util.Date`  | `private` | End date of the employment contract.                           |
+| `cedula_perso`           | `String`          | `private` | Foreign key → `Persona.cedula`.                                |
+| `cod_evento`             | `String`          | `private` | Foreign key → `Evento`. The assigned event code.               |
+
+### Inherited fields (from Persona)
+
+See the [Persona reference](/reference/persona) for the nine inherited fields.
+
+<Note>
+  The field name `contanto_p` is a spelling variant of "contrato" (contract) carried from the original source. Use this exact name in all getter/setter calls.
+</Note>
+
+## Getters and setters
+
+| Method                                              | Returns / Parameter     | Description                           |
+|-----------------------------------------------------|-------------------------|---------------------------------------|
+| `getCodigo_perso()`                                 | `String`                | Returns `codigo_perso`.               |
+| `setCodigo_perso(String codigo_perso)`              | `void`                  | Sets `codigo_perso`.                  |
+| `getTipo_personal()`                                | `String`                | Returns `Tipo_personal`.              |
+| `setTipo_personal(String Tipo_personal)`            | `void`                  | Sets `Tipo_personal`.                 |
+| `getDepartamento_p()`                               | `String`                | Returns `Departamento_p`.             |
+| `setDepartamento_p(String Departamento_p)`          | `void`                  | Sets `Departamento_p`.                |
+| `getContanto_p()`                                   | `String`                | Returns `contanto_p`.                 |
+| `setContanto_p(String contanto_p)`                  | `void`                  | Sets `contanto_p`.                    |
+| `getCalificacion_p()`                               | `String`                | Returns `Calificacion_p`.             |
+| `setCalificacion_p(String Calificacion_p)`          | `void`                  | Sets `Calificacion_p`.                |
+| `getFecha_contrato_inicio()`                        | `java.util.Date`        | Returns `Fecha_contrato_inicio`.      |
+| `setFecha_contrato_inicio(Date Fecha_contrato_inicio)` | `void`               | Sets `Fecha_contrato_inicio`.         |
+| `getFecha_contrato_fin()`                           | `java.util.Date`        | Returns `Fecha_contrato_fin`.         |
+| `setFecha_contrato_fin(Date Fecha_contrato_fin)`    | `void`                  | Sets `Fecha_contrato_fin`.            |
+| `getCedula_perso()`                                 | `String`                | Returns `cedula_perso`.               |
+| `setCedula_perso(String cedula_perso)`              | `void`                  | Sets `cedula_perso`.                  |
+| `getCod_evento()`                                   | `String`                | Returns `cod_evento`.                 |
+| `setCod_evento(String cod_evento)`                  | `void`                  | Sets `cod_evento`.                    |
+
+All nine `Persona` getters and setters are also available through inheritance.
+
+## toString()
+
+```java
+@Override
+public String toString() {
+    return "Personal{" + "codigo_perso=" + codigo_perso
+        + ", Tipo_personal=" + Tipo_personal
+        + ", Departamento_p=" + Departamento_p
+        + ", contanto_p=" + contanto_p
+        + ", Calificacion_p=" + Calificacion_p
+        + ", Fecha_contrato_inicio=" + Fecha_contrato_inicio
+        + ", Fecha_contrato_fin=" + Fecha_contrato_fin
+        + ", cedula_perso=" + cedula_perso
+        + ", cod_evento=" + cod_evento + '}';
+}
+```
+
+Returns all nine `Personal`-specific fields including both contract dates. Inherited `Persona` fields are not included.

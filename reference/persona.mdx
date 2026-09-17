@@ -1,0 +1,137 @@
+---
+title: "Persona: Base Class for All User Entities"
+sidebarTitle: "Persona"
+description: "Persona is the root base class in DBOO. All user entities (Organizador, Comerciantes, Personal, Patrocinador, Publico) extend Persona and inherit its nine personal data fields."
+---
+
+`Persona` is the foundational domain class in the DBOO object model. Every participant in the system — organizers, merchants, staff, sponsors, and public attendees — is a `Persona` at its core. The class is defined in package `Clases` and holds nine fields covering identity, contact information, and demographics. All subclasses call `super(...)` to populate these fields, ensuring a consistent base record for every person stored in the db4o object database.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `java.lang.Object` (root)     |
+| **Known subclasses** | `Organizador`, `Comerciantes`, `Personal`, `Patrocinador`, `Publico` |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Persona()
+```
+
+Creates an empty `Persona` instance. All fields are initialised to `null`. Used by subclasses that declare their own no-arg constructor calling `super()`.
+
+### Full constructor
+
+```java
+public Persona(
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+<ParamField path="cedula" type="String" required>
+  National identification number (cédula). Must be exactly 10 digits. Validated upstream by `Validaciones.ValidarCedula()`.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  First name of the person. Validated by `Validaciones.ValidarNomApe()` — 3–30 alphabetic characters.
+</ParamField>
+
+<ParamField path="apellido" type="String" required>
+  Last name (surname) of the person.
+</ParamField>
+
+<ParamField path="telefono" type="String" required>
+  Landline telephone number stored as a string.
+</ParamField>
+
+<ParamField path="correo" type="String" required>
+  Email address. Validated by `Validaciones.ValidarCorreo()` using a full RFC-style regex.
+</ParamField>
+
+<ParamField path="direccion" type="String" required>
+  Free-text address string (street, neighbourhood, etc.).
+</ParamField>
+
+<ParamField path="celular" type="String" required>
+  Mobile phone number stored as a string.
+</ParamField>
+
+<ParamField path="fecchaNaci" type="java.util.Date" required>
+  Date of birth. Validated by `Validaciones.ValidarFechaNacimiento()`.
+</ParamField>
+
+<ParamField path="genero" type="String" required>
+  Gender code. Accepted values are `"H"` (hombre / male) or `"M"` (mujer / female), validated by `Validaciones.ValidarGenero()`.
+</ParamField>
+
+## Fields
+
+| Field         | Type              | Access    | Description                                                        |
+|---------------|-------------------|-----------|--------------------------------------------------------------------|
+| `cedula`      | `String`          | `private` | National 10-digit ID number. Primary natural key across all subclasses. |
+| `nombre`      | `String`          | `private` | Person's first name.                                               |
+| `apellido`    | `String`          | `private` | Person's last name.                                                |
+| `telefono`    | `String`          | `private` | Landline phone number.                                             |
+| `correo`      | `String`          | `private` | Email address.                                                     |
+| `direccion`   | `String`          | `private` | Residential or contact address.                                    |
+| `celular`     | `String`          | `private` | Mobile phone number.                                               |
+| `fecchaNaci`  | `java.util.Date`  | `private` | Date of birth. Note the double-`c` typo is preserved from source. |
+| `genero`      | `String`          | `private` | Gender — `"H"` or `"M"`.                                          |
+
+<Note>
+  The field `fecchaNaci` contains a double-`c` spelling carried over from the original source. All getter/setter references must use this exact name.
+</Note>
+
+## Getters and setters
+
+| Method                          | Returns / Parameter | Description                  |
+|---------------------------------|---------------------|------------------------------|
+| `getCedula()`                   | `String`            | Returns `cedula`.            |
+| `setCedula(String cedula)`      | `void`              | Sets `cedula`.               |
+| `getNombre()`                   | `String`            | Returns `nombre`.            |
+| `setNombre(String nombre)`      | `void`              | Sets `nombre`.               |
+| `getApellido()`                 | `String`            | Returns `apellido`.          |
+| `setApellido(String apellido)`  | `void`              | Sets `apellido`.             |
+| `getTelefono()`                 | `String`            | Returns `telefono`.          |
+| `setTelefono(String telefono)`  | `void`              | Sets `telefono`.             |
+| `getCorreo()`                   | `String`            | Returns `correo`.            |
+| `setCorreo(String correo)`      | `void`              | Sets `correo`.               |
+| `getDireccion()`                | `String`            | Returns `direccion`.         |
+| `setDireccion(String direccion)`| `void`              | Sets `direccion`.            |
+| `getCelular()`                  | `String`            | Returns `celular`.           |
+| `setCelular(String celular)`    | `void`              | Sets `celular`.              |
+| `getFecchaNaci()`               | `java.util.Date`    | Returns `fecchaNaci`.        |
+| `setFecchaNaci(Date fecchaNaci)`| `void`              | Sets `fecchaNaci`.           |
+| `getGenero()`                   | `String`            | Returns `genero`.            |
+| `setGenero(String genero)`      | `void`              | Sets `genero`.               |
+
+## toString()
+
+```java
+@Override
+public String toString() {
+    return "Persona{" + "cedula=" + cedula + ", nombre=" + nombre
+        + ", apellido=" + apellido + ", telefono=" + telefono
+        + ", correo=" + correo + ", direccion=" + direccion
+        + ", celular=" + celular + ", fecchaNaci=" + fecchaNaci
+        + ", genero=" + genero + '}';
+}
+```
+
+Produces a human-readable representation of all nine fields. Subclasses override `toString()` to include their own fields in addition to — or instead of — the parent output.
+
+<Tip>
+  When retrieving a `Persona` subclass from db4o and printing it, the subclass `toString()` is called automatically due to polymorphism. Cast the object to the concrete type to guarantee field-level access.
+</Tip>

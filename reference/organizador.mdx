@@ -1,0 +1,147 @@
+---
+title: "Organizador: Event Organizer with Login Credentials"
+sidebarTitle: "Organizador"
+description: "Organizador extends Persona and adds event organizer fields: a unique code, login username, password, and budget for event management."
+---
+
+`Organizador` represents a registered event organizer in DBOO. Beyond the nine personal-data fields inherited from `Persona`, it adds four domain-specific fields: a unique organizer code, a login username, a login password, and a budget figure used during event planning. Organizer objects are persisted directly to the db4o `ObjectContainer` and are used to authenticate users who access the organizer-facing Swing forms.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `Clases.Persona`              |
+| **Imports** | `java.util.Date`              |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Organizador()
+```
+
+Delegates immediately to `super()` (the no-arg `Persona` constructor). All fields are `null` / `0.0`. Useful for deserialization scenarios in db4o.
+
+### Full constructor
+
+```java
+public Organizador(
+    String cod_organizador,
+    String usuario,
+    String contraseña,
+    double Presupuesto,
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+The first four parameters populate the `Organizador`-specific fields; the remaining nine are passed directly to `super(cedula, nombre, ...)` to populate the inherited `Persona` fields.
+
+<ParamField path="cod_organizador" type="String" required>
+  Unique organizer code. Validated by `Validaciones.ValidarId()` — must match the pattern `AAA-000` (three uppercase letters, hyphen, three digits).
+</ParamField>
+
+<ParamField path="usuario" type="String" required>
+  Login username for the organizer portal.
+</ParamField>
+
+<ParamField path="contraseña" type="String" required>
+  Login password. Validated by `Validaciones.validarContrasena()` — minimum 8 characters with at least one uppercase letter, one lowercase letter, and one digit.
+</ParamField>
+
+<ParamField path="Presupuesto" type="double" required>
+  Monetary budget allocated for events managed by this organizer. Validated by `Validaciones.validarDouble()`.
+</ParamField>
+
+<ParamField path="cedula" type="String" required>
+  Inherited: national 10-digit ID. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Inherited: first name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="apellido" type="String" required>
+  Inherited: last name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="telefono" type="String" required>
+  Inherited: landline phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="correo" type="String" required>
+  Inherited: email address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="direccion" type="String" required>
+  Inherited: address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="celular" type="String" required>
+  Inherited: mobile phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="fecchaNaci" type="java.util.Date" required>
+  Inherited: date of birth. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="genero" type="String" required>
+  Inherited: gender (`"H"` or `"M"`). Passed to `Persona` constructor.
+</ParamField>
+
+## Fields
+
+### Organizador-specific fields
+
+| Field              | Type     | Access    | Description                                                    |
+|--------------------|----------|-----------|----------------------------------------------------------------|
+| `cod_organizador`  | `String` | `private` | Primary key. Unique organizer identifier (format `AAA-000`).  |
+| `usuario`          | `String` | `private` | Login username for the organizer UI.                          |
+| `contraseña`       | `String` | `private` | Login password (stored as plain text in the object database). |
+| `Presupuesto`      | `double` | `private` | Budget available to this organizer for events.                |
+
+### Inherited fields (from Persona)
+
+See the [Persona reference](/reference/persona) for the full list of nine inherited fields (`cedula`, `nombre`, `apellido`, `telefono`, `correo`, `direccion`, `celular`, `fecchaNaci`, `genero`).
+
+<Note>
+  `contraseña` is stored as a plain-text `String` in the db4o database. In a production deployment, consider hashing passwords before persisting the object.
+</Note>
+
+## Getters and setters
+
+| Method                                    | Returns / Parameter | Description                     |
+|-------------------------------------------|---------------------|---------------------------------|
+| `getCod_organizador()`                    | `String`            | Returns `cod_organizador`.      |
+| `setCod_organizador(String cod_organizador)` | `void`           | Sets `cod_organizador`.         |
+| `getUsuario()`                            | `String`            | Returns `usuario`.              |
+| `setUsuario(String usuario)`              | `void`              | Sets `usuario`.                 |
+| `getContraseña()`                         | `String`            | Returns `contraseña`.           |
+| `setContraseña(String contraseña)`        | `void`              | Sets `contraseña`.              |
+| `getPresupuesto()`                        | `double`            | Returns `Presupuesto`.          |
+| `setPresupuesto(double Presupuesto)`      | `void`              | Sets `Presupuesto`.             |
+
+All nine `Persona` getters and setters are also available through inheritance. See [Persona](/reference/persona) for details.
+
+## toString()
+
+```java
+@Override
+public String toString() {
+    return "Organizador{" + "cod_organizador=" + cod_organizador
+        + ", usuario=" + usuario
+        + ", contraseña=" + contraseña
+        + ", Presupuesto=" + Presupuesto + '}';
+}
+```
+
+Returns only the four `Organizador`-specific fields. The inherited `Persona` fields are not included in this output. To view all fields, call the parent's `toString()` separately or extend this method.

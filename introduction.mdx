@@ -1,0 +1,71 @@
+---
+title: "DBOO: Event Management with Object-Oriented Database"
+sidebarTitle: "Introduction"
+description: "DBOO is a Java Swing desktop application that persists events, organizers, sponsors, merchants, and staff directly as Java objects using the db4o engine."
+---
+
+DBOO is a multi-role desktop application built with Java SE and Java Swing that manages the full lifecycle of events — from organizer registration and sponsor onboarding through booth assignments and public attendance. Rather than relying on a relational database and SQL queries, DBOO stores and retrieves all application data as native Java objects using the db4o object-oriented database engine, eliminating any need for schema design or object-relational mapping.
+
+## What is db4o?
+
+db4o (Db4objects) is an embeddable, open-source object-oriented database engine for Java. Instead of serializing objects into rows and columns, db4o writes each Java object directly into a binary `.yap` file, preserving the full object graph including inheritance and nested references. There is no SQL, no ORM framework, and no schema migration — your Java class definitions are the schema.
+
+DBOO opens the database at startup using the `Db4o.openFile(path)` factory method, which returns an `ObjectContainer` used throughout the application for all reads and writes:
+
+```java
+ObjectContainer base = Db4o.openFile(direccion);
+```
+
+The `direccion` variable is a static `String` field in `Inicio.java` that holds the absolute path to the `.yap` file on the host machine.
+
+<Note>
+  The `.yap` file path is hardcoded as a static field in `src/proyecto_final/Inicio.java` and **must be updated** to a valid path on your machine before the application can open or create its database. See the [Quickstart](/quickstart) for details.
+</Note>
+
+## What DBOO Manages
+
+DBOO tracks the following core entities, each stored as a Java object in the `.yap` database:
+
+- **Events** (`Clases/Evento.java`) — the central entity tying all other records together
+- **Organizers** (`Clases/Organizador.java`) — users who create and manage events
+- **Sponsors** (`Clases/Patrocinador.java`) — organizations providing financial backing
+- **Merchants / Comerciantes** (`Clases/Comerciantes.java`) — vendors assigned to booths at events
+- **Staff / Personal** (`Clases/Personal.java`) — event workers across departments
+- **Public Attendees / Público** (`Clases/Publico.java`) — registered members of the public
+- **Departments** (`Clases/Departamento.java`) — organizational units for staff allocation
+- **Locations / Direccion** (`Clases/Direccion.java`) and **Cities** (`Clases/Ciudad.java`) — geographic data for event venues
+- **Booths / Puestos** (`Clases/Puesto.java`) — physical stalls assigned to merchants inside event venues
+
+## User Roles
+
+DBOO supports three distinct roles, each routed to its own menu and set of screens from the `Inicio` (Welcome) screen:
+
+<CardGroup cols={3}>
+  <Card title="Administrator" icon="shield-halved" href="/roles/administrator">
+    Full access to all CRUD forms: manage events, organizers, sponsors, merchants, staff, departments, and booths. Approve or reject organizer applications.
+  </Card>
+  <Card title="Organizer" icon="calendar-days" href="/roles/organizer">
+    Create and manage their own events, view assigned staff, run reports, and submit survey responses. Login is credential-based via `Login_Organizador`.
+  </Card>
+  <Card title="Public / Merchant" icon="store" href="/roles/public-merchant">
+    Self-register as a public attendee or apply for a merchant booth. Access is granted through the **CREAR CUENTA** button or the **SOLICITAR PUESTO** menu on the welcome screen.
+  </Card>
+</CardGroup>
+
+## Technology Stack
+
+| Component | Technology |
+|---|---|
+| Language | Java SE |
+| GUI Framework | Java Swing (NetBeans Form Editor / `.form` files) |
+| Object Database | db4o (`com.db4o.*`) |
+| Date Picker Widget | JCalendar |
+| IDE | NetBeans IDE 8.x |
+| Database File Format | `.yap` binary file |
+
+The project is split into two NetBeans projects under the same repository root:
+
+- **`Proyecto_final/`** — the main application with all Swing forms and domain classes.
+- **`Trabajo_db4o/`** — a standalone module that demonstrates core db4o operations and defines the `Empleados` demo class used during development.
+
+The `.yap` file path is configured in `Inicio.java` as a `public static String` field named `direccion`. Several commented-out alternates in the source reflect the different developer machines that contributed to the project, confirming this value must be set locally before first run.

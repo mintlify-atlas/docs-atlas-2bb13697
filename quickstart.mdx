@@ -1,47 +1,83 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with DBOO in NetBeans"
+sidebarTitle: "Quickstart"
+description: "Learn how to open, configure, and run the DBOO event management application in NetBeans IDE in four steps."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+This guide walks you through cloning the DBOO repository, opening both NetBeans projects, updating the hardcoded `.yap` database path for your local machine, adding the required db4o library, and launching the application for the first time. Follow each step in order — the application will not start without a valid database path configured in `Inicio.java`.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Clone the Repository">
+    Clone the project from GitHub using the following command:
 
     ```bash
-    npm install your-package
+    git clone https://github.com/MauricioFajardo/orientado_objetos.git
+    ```
+
+    This creates the `orientado_objetos/` directory containing two NetBeans projects:
+    - `Proyecto_final/` — the main event management application
+    - `Trabajo_db4o/` — the standalone db4o demonstration module
+  </Step>
+
+  <Step title="Open in NetBeans">
+    Open **NetBeans IDE 8.x or later** and import both projects as existing projects:
+
+    1. Go to **File → Open Project** and navigate to the cloned `orientado_objetos/` root directory. Select `Proyecto_final` (it contains `build.xml` and the `nbproject/` folder) and click **Open Project**.
+    2. Repeat **File → Open Project** and select the `Trabajo_db4o/` subdirectory to open that project as well.
+
+    The `nbproject/project.xml` file identifies the main project name as `Proyecto_final` and registers `src/` as the sole source root:
+
+    ```xml
+    <name>Proyecto_final</name>
+    <source-roots>
+        <root id="src.dir"/>
+    </source-roots>
     ```
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
 
-    ```bash
-    your-cli init
+  <Step title="Configure the Database Path">
+    Before running the application, update the `.yap` file path to a location that exists on your machine. Open `src/proyecto_final/Inicio.java` and locate the static field `direccion` near the top of the class:
+
+    ```java
+    public static String direccion = "C:\\Users\\HP\\Documents\\GitHub\\orientado_objetos\\pro.yap";
     ```
+
+    Replace the value with an absolute path to a directory that exists on your system — db4o will create the `.yap` file automatically on first run if it does not yet exist. For example:
+
+    ```java
+    // Windows
+    public static String direccion = "C:\\Users\\YourName\\Documents\\dboo\\pro.yap";
+
+    // macOS / Linux
+    public static String direccion = "/home/yourname/dboo/pro.yap";
+    ```
+
+    <Warning>
+      The directory portion of the path (e.g. `C:\Users\YourName\Documents\dboo\`) **must already exist**. db4o creates the `.yap` file but will not create missing parent directories.
+    </Warning>
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
 
-    ```bash
-    your-cli start
+  <Step title="Add the db4o Library and Run">
+    The project requires the db4o JAR at compile time and runtime. Add it in NetBeans:
+
+    1. Right-click the `Proyecto_final` project in the Projects panel and choose **Properties**.
+    2. Select **Libraries** in the left panel, then click **Add JAR/Folder**.
+    3. Browse to your db4o JAR (e.g. `db4o-8.x-all-java5.jar`) and click **Open**, then **OK**.
+
+    Once the library is on the classpath, right-click `Proyecto_final` and choose **Run** (or press F6). NetBeans will compile and launch the `Proyecto_final` main class, which is the application entry point:
+
+    ```java
+    public static void main(String[] args) {
+        Inicio log = new Inicio();
+        log.setVisible(true);
+        log.setLocationRelativeTo(null);
+    }
     ```
+
+    This instantiates the `Inicio` JFrame, centres it on screen, and makes it visible.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<Note>
+  The application opens to the `Inicio` (Welcome) screen, where you can log in as Administrator, Organizer, or register as Public/Merchant. Use the **INICIO COMO:** menu bar item to select Administrator or Organizer login, or click **CREAR CUENTA** to self-register as a public attendee. To request a merchant booth, use the **SOLICITAR PUESTO → Crear Cuenta** menu option.
+</Note>

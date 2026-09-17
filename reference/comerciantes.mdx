@@ -1,0 +1,165 @@
+---
+title: "Comerciantes: Merchant Participant Entity"
+sidebarTitle: "Comerciantes"
+description: "Comerciantes extends Persona and represents a commercial merchant participant assigned to a booth at an event, with fields for commerce type, products, and services."
+---
+
+`Comerciantes` models a merchant who participates in an event by occupying a commercial booth. It extends `Persona` to inherit all personal contact information and adds six domain-specific fields: a participant code, a foreign-key reference back to the linked `Persona` record's `cedula`, the type of commerce, a description of products, a description of services, and the code of the assigned booth (`Puesto`). Comerciantes objects are stored in db4o and managed through the dedicated merchant CRUD form.
+
+## Package and inheritance
+
+| Property    | Value                          |
+|-------------|-------------------------------|
+| **Package** | `Clases`                      |
+| **Extends** | `Clases.Persona`              |
+| **Imports** | `java.util.Date`              |
+
+## Constructors
+
+### No-argument constructor
+
+```java
+public Comerciantes()
+```
+
+Delegates to `super()`. All fields are `null`. Used by db4o during object reconstruction.
+
+### Full constructor
+
+```java
+public Comerciantes(
+    String codigo_participante,
+    String cedula_perso,
+    String Tipo_Comercio,
+    String Productos_c,
+    String Servicio_c,
+    String codigo_puesto,
+    String cedula,
+    String nombre,
+    String apellido,
+    String telefono,
+    String correo,
+    String direccion,
+    String celular,
+    Date   fecchaNaci,
+    String genero
+)
+```
+
+The first six parameters populate `Comerciantes`-specific fields; the remaining nine are forwarded to `super(cedula, nombre, ...)`.
+
+<ParamField path="codigo_participante" type="String" required>
+  Primary key for this merchant record. Uniquely identifies the merchant participant within the event.
+</ParamField>
+
+<ParamField path="cedula_perso" type="String" required>
+  Foreign key referencing the `cedula` field of the associated `Persona` record. Links the merchant to their personal identity entry.
+</ParamField>
+
+<ParamField path="Tipo_Comercio" type="String" required>
+  Category of commerce (e.g., food, crafts, clothing). Describes what kind of trading the merchant engages in.
+</ParamField>
+
+<ParamField path="Productos_c" type="String" required>
+  Description of the products the merchant sells or displays at their booth.
+</ParamField>
+
+<ParamField path="Servicio_c" type="String" required>
+  Description of the services the merchant offers at their booth.
+</ParamField>
+
+<ParamField path="codigo_puesto" type="String" required>
+  Foreign key referencing the `Codigo_puesto` of the assigned `Puesto` (booth). Links the merchant to their physical location at the event.
+</ParamField>
+
+<ParamField path="cedula" type="String" required>
+  Inherited: national 10-digit ID. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="nombre" type="String" required>
+  Inherited: first name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="apellido" type="String" required>
+  Inherited: last name. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="telefono" type="String" required>
+  Inherited: landline phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="correo" type="String" required>
+  Inherited: email address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="direccion" type="String" required>
+  Inherited: address. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="celular" type="String" required>
+  Inherited: mobile phone. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="fecchaNaci" type="java.util.Date" required>
+  Inherited: date of birth. Passed to `Persona` constructor.
+</ParamField>
+
+<ParamField path="genero" type="String" required>
+  Inherited: gender (`"H"` or `"M"`). Passed to `Persona` constructor.
+</ParamField>
+
+## Fields
+
+### Comerciantes-specific fields
+
+| Field                  | Type     | Access    | Description                                                       |
+|------------------------|----------|-----------|-------------------------------------------------------------------|
+| `codigo_participante`  | `String` | `private` | Primary key. Unique merchant participant identifier.             |
+| `cedula_perso`         | `String` | `private` | Foreign key → `Persona.cedula`. Links to the person record.      |
+| `Tipo_Comercio`        | `String` | `private` | Type or category of commerce.                                    |
+| `Productos_c`          | `String` | `private` | Description of products offered.                                 |
+| `Servicio_c`           | `String` | `private` | Description of services offered.                                 |
+| `codigo_puesto`        | `String` | `private` | Foreign key → `Puesto.Codigo_puesto`. Assigned booth reference.  |
+
+### Inherited fields (from Persona)
+
+See the [Persona reference](/reference/persona) for the full list of nine inherited fields.
+
+## Getters and setters
+
+| Method                                        | Returns / Parameter | Description                        |
+|-----------------------------------------------|---------------------|------------------------------------|
+| `getCodigo_participante()`                    | `String`            | Returns `codigo_participante`.     |
+| `setCodigo_participante(String codigo_participante)` | `void`       | Sets `codigo_participante`.        |
+| `getCedula_perso()`                           | `String`            | Returns `cedula_perso`.            |
+| `setCedula_perso(String cedula_perso)`        | `void`              | Sets `cedula_perso`.               |
+| `getTipo_Comercio()`                          | `String`            | Returns `Tipo_Comercio`.           |
+| `setTipo_Comercio(String Tipo_Comercio)`      | `void`              | Sets `Tipo_Comercio`.              |
+| `getProductos_c()`                            | `String`            | Returns `Productos_c`.             |
+| `setProductos_c(String Productos_c)`          | `void`              | Sets `Productos_c`.                |
+| `getServicio_c()`                             | `String`            | Returns `Servicio_c`.              |
+| `setServicio_c(String Servicio_c)`            | `void`              | Sets `Servicio_c`.                 |
+| `getCodigo_puesto()`                          | `String`            | Returns `codigo_puesto`.           |
+| `setCodigo_puesto(String codigo_puesto)`      | `void`              | Sets `codigo_puesto`.              |
+
+All nine `Persona` getters and setters are also available through inheritance.
+
+## toString()
+
+```java
+@Override
+public String toString() {
+    return "Comerciantes{" + "codigo_participante=" + codigo_participante
+        + ", cedula_perso=" + cedula_perso
+        + ", Tipo_Comercio=" + Tipo_Comercio
+        + ", Productos_c=" + Productos_c
+        + ", Servicio_c=" + Servicio_c
+        + ", codigo_puesto=" + codigo_puesto + '}';
+}
+```
+
+Returns all six `Comerciantes`-specific fields. The inherited `Persona` fields are not included in this output.
+
+<Note>
+  `codigo_puesto` is a string foreign key. When resolving the actual booth details, use this value to query db4o for a `Puesto` object where `Puesto.Codigo_puesto` matches. See the [Location Classes reference](/reference/location-classes) for the `Puesto` field structure.
+</Note>

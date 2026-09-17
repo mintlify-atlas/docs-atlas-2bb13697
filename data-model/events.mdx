@@ -1,0 +1,59 @@
+---
+title: "Event Entity and CRUD Operations in DBOO"
+sidebarTitle: "Events"
+description: "How events are modeled and managed in DBOO, including the Evento class structure, CRUD form fields, and relationships to organizers and staff."
+---
+
+Events are the central entity in DBOO. The `Evento` class (in the `Clases` package) represents a single event and is managed through two CRUD forms — `Crud_Evento` (for administrators) and `Cruds_Eventos` (for organizers). Every other entity — organizers, staff, merchants, attendees, and sponsors — connects back to an event through string-code foreign keys stored on their respective objects.
+
+<Note>
+  The `Evento` class in source (`src/Clases/Evento.java`) is an empty scaffold class with no declared fields. Its full field set is expressed through the `Crud_Evento` GUI form. At save time, the form reads values directly from its Swing components and stores them into the db4o `ObjectContainer` — the form itself acts as the data shape definition for an event record.
+</Note>
+
+## Event form fields
+
+The following attributes are captured and managed through the event CRUD GUI:
+
+| Field | UI Component | Description |
+|---|---|---|
+| Código Evento | `JTextField` | Unique event identifier — used as a FK target by `Organizador` and `Personal` |
+| Nombre | `JTextField` | Display name of the event |
+| Tipo de Evento | `JComboBox` (dropdown) | Event category or type classification |
+| Fecha de Inicio | `JDateChooser` | Event start date, selected via a date-picker widget |
+| Fecha de Fin | `JDateChooser` | Event end date, selected via a date-picker widget |
+| Descripción / Location | `JTextArea` | Free-text description or location details for the event |
+
+The form toolbar exposes four CRUD actions:
+
+| Button | Label | Action |
+|---|---|---|
+| Save | **Guardar** | Persists a new `Evento` object to the db4o container |
+| Update | **Modificar** | Updates an existing event record by query and re-store |
+| Delete | **Eliminar** | Removes the selected event object from the container |
+| Clear | **Limpiar** | Resets all form fields to their default empty state |
+
+## CRUD forms
+
+DBOO provides two separate event management forms depending on the logged-in role:
+
+### `Crud_Evento`
+
+The administrator-facing form. It provides full create, read, update, and delete access to all event records in the database. Accessible from the main administration menu. Administrators can manage any event regardless of which organizer created it.
+
+### `Cruds_Eventos`
+
+The organizer-facing form, launched from `MenuOrganizador` after a successful organizer login. It exposes the same CRUD operations but is scoped to events the organizer is responsible for. The organizer's `cod_organizador` is used to filter and associate events at save time.
+
+## Relationships
+
+Events act as the hub of the DBOO object graph. The following entities link to events:
+
+| Entity | Field | Relationship |
+|---|---|---|
+| `Organizador` | `cod_organizador` | An organizer is linked to an event; the event stores the organizer's code as a FK reference |
+| `Personal` | `cod_evento` | Each staff member holds the FK code of the event they are contracted for |
+| `Departamento` | `id_departamento` | Departments provide organizational structure context for staff assigned to events |
+
+<Note>
+  The `Evento` class is a planned extension point. The current implementation captures event data entirely through GUI form fields bound to the `ObjectContainer` at save time. Future iterations of the model are expected to promote these fields into typed instance variables on the `Evento` class itself.
+</Note>

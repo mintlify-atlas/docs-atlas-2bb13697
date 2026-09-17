@@ -1,0 +1,126 @@
+---
+title: "Person Hierarchy: Shared Base Class for All Users"
+sidebarTitle: "Person Hierarchy"
+description: "All user entities in DBOO inherit from the Persona base class, sharing common personal data fields and getters/setters."
+---
+
+Every user-facing entity in DBOO extends `Persona`, a Java class that holds the universal personal data fields shared across organizers, merchants, staff, sponsors, and public attendees. This inheritance keeps personal data DRY and lets CRUD forms reuse the same field set without duplicating validation logic or column definitions across multiple classes.
+
+## Persona constructor
+
+The full-argument constructor of `Persona` captures all personal data in a single call:
+
+```java
+public Persona(String cedula, String nombre, String apellido,
+               String telefono, String correo, String direccion,
+               String celular, Date fecchaNaci, String genero)
+```
+
+## Persona fields
+
+| Field | Type | Description |
+|---|---|---|
+| `cedula` | `String` | National ID number (10-digit, validated in the GUI) |
+| `nombre` | `String` | First name |
+| `apellido` | `String` | Last name |
+| `telefono` | `String` | Home phone number |
+| `correo` | `String` | Email address |
+| `direccion` | `String` | Address string |
+| `celular` | `String` | Mobile phone number |
+| `fecchaNaci` | `java.util.Date` | Date of birth |
+| `genero` | `String` | Gender code — `"H"` (Hombre) or `"M"` (Mujer) |
+
+Each field has a corresponding getter and setter following the standard JavaBean convention (e.g. `getCedula()` / `setCedula(String)`). The class also overrides `toString()` to emit a single-line debug representation of all fields.
+
+## Subclasses
+
+### Organizador
+
+Represents an event organizer with system login access. In addition to all `Persona` fields, `Organizador` adds:
+
+| Field | Type | Description |
+|---|---|---|
+| `cod_organizador` | `String` | Primary key — unique organizer code |
+| `usuario` | `String` | Login username |
+| `contraseña` | `String` | Login password |
+| `Presupuesto` | `double` | Allocated event budget |
+
+Full constructor signature (from source):
+
+```java
+public Organizador(String cod_organizador, String usuario,
+                   String contraseña, double Presupuesto,
+                   String cedula, String nombre, String apellido,
+                   String telefono, String correo, String direccion,
+                   String celular, Date fecchaNaci, String genero)
+```
+
+---
+
+### Patrocinador
+
+Represents an event sponsor. Additional fields beyond `Persona`:
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_patri` | `String` | Primary key — unique sponsor code |
+| `Descripcion_p` | `String` | Sponsor description |
+| `Contacto_p` | `String` | Sponsor contact information |
+| `Redes_Sociales` | `String` | Social media handles/links |
+| `cedula_perso` | `String` | FK — links back to the associated `Persona` record |
+
+---
+
+### Comerciantes
+
+Represents a merchant participant assigned to a booth. Additional fields beyond `Persona`:
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_participante` | `String` | Primary key — unique participant code |
+| `cedula_perso` | `String` | FK — linked `Persona` cedula |
+| `Tipo_Comercio` | `String` | Type of commerce (e.g. food, crafts) |
+| `Productos_c` | `String` | Products offered |
+| `Servicio_c` | `String` | Services offered |
+| `codigo_puesto` | `String` | FK — the `Puesto` booth assigned to this merchant |
+
+---
+
+### Personal
+
+Represents a contracted staff member. Additional fields beyond `Persona`:
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_perso` | `String` | Primary key — unique staff code |
+| `Tipo_personal` | `String` | Role or staff category |
+| `Departamento_p` | `String` | Department the staff member belongs to |
+| `contanto_p` | `String` | Contact reference for the staff member |
+| `Calificacion_p` | `String` | Performance rating |
+| `Fecha_contrato_inicio` | `java.util.Date` | Contract start date |
+| `Fecha_contrato_fin` | `java.util.Date` | Contract end date |
+| `cedula_perso` | `String` | FK — linked `Persona` cedula |
+| `cod_evento` | `String` | FK — the `Evento` this staff member is assigned to |
+
+---
+
+### Publico
+
+Represents a public event attendee. Additional fields beyond `Persona`:
+
+| Field | Type | Description |
+|---|---|---|
+| `codigo_publico` | `String` | Primary key — unique attendee code |
+| `Tipo_Entrada` | `String` | Ticket type (e.g. general, VIP) |
+| `Estado_reguistro` | `String` | Registration status |
+| `Preferencias_p` | `String` | Attendee preferences |
+| `Pago_p` | `double` | Ticket payment amount |
+| `codigo_sube_ima` | `String` | FK — linked image upload record |
+| `codigo_encuesta` | `String` | FK — linked survey (`Encuesta`) record |
+| `califica_eve` | `String` | FK — linked event rating record |
+| `codigo_comen` | `String` | FK — linked comment record |
+| `cedula_persona` | `String` | FK — linked `Persona` cedula |
+
+<Tip>
+  All subclasses call `super(cedula, nombre, ...)` in their full-argument constructor to initialize the `Persona` fields before setting their own. This means every subclass object stored in db4o automatically carries the complete personal data profile.
+</Tip>

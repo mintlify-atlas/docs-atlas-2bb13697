@@ -1,0 +1,97 @@
+---
+title: "Empleados: Employee Class in the DB4O Demo Module"
+sidebarTitle: "Empleados"
+description: "The Empleados class models an employee record in the Trabajo_db4o demo module, demonstrating basic db4o persistence with salary, department, and contract fields."
+---
+
+`Empleados` is the domain class in the `Trabajo_db4o` sub-project. Unlike the main application's `Clases` package, `Empleados` does not extend `Persona` — it is a standalone POJO demonstrating raw db4o object persistence with 11 fields covering personal contact information, payroll data, and organisational placement. The class is instantiated by the `CrearEmpleado` static helper in `Trabajo_db4o.java`, which immediately hands each new instance to `base.set()` for storage.
+
+## Package
+
+```java
+package trabajo_db4o;
+```
+
+## Fields
+
+All fields are declared `private`. Getters and setters are generated for every field following standard JavaBeans conventions.
+
+| Field | Type | Description |
+|---|---|---|
+| `cedula_empleado` | `String` | Employee national ID |
+| `nombre_empleado` | `String` | First name |
+| `apellido_empleado` | `String` | Last name |
+| `correo` | `String` | Email address |
+| `telefono` | `String` | Phone number |
+| `fecha_contratacion` | `String` | Hire date string |
+| `cedula_jefe` | `String` | Manager's national ID |
+| `comicion` | `String` | Commission / role code |
+| `cod_trabajo` | `String` | Job code |
+| `salario` | `double` | Salary |
+| `id_departamento` | `int` | Department ID |
+
+## Constructors
+
+`Empleados` provides two constructors: a no-argument constructor required by db4o for instantiation during retrieval, and a full-argument constructor used when creating new employee records.
+
+```java
+public Empleados() {}
+
+public Empleados(String cedula_empleado, String nombre_empleado,
+                 String apellido_empleado, String correo, String telefono,
+                 String fecha_contratacion, String cedula_jefe,
+                 String comicion, String cod_trabajo,
+                 double salario, int id_departamento)
+```
+
+The no-argument constructor is essential: db4o calls it reflectively when reconstructing objects from the `.yap` file during a `get()` query.
+
+## toString()
+
+The overridden `toString()` includes every field except `cod_trabajo`, which is omitted from the output string. This method is primarily used for console logging and debugging.
+
+```java
+@Override
+public String toString() {
+    return "Empleados{" + "cedula_empleado=" + cedula_empleado
+        + ", nombre_empleado=" + nombre_empleado
+        + ", apellido_empleado=" + apellido_empleado
+        + ", correo=" + correo
+        + ", telefono=" + telefono
+        + ", fecha_contratacion=" + fecha_contratacion
+        + ", cedula_jefe=" + cedula_jefe
+        + ", comicion=" + comicion
+        + ", salario=" + salario
+        + ", id_departamento=" + id_departamento + '}';
+}
+```
+
+## Usage in Trabajo_db4o
+
+The `CrearEmpleado` static method in `Trabajo_db4o.java` wraps object construction and persistence into a single call. It accepts an open `ObjectContainer` together with all 11 field values, creates a new `Empleados` instance, and stores it immediately via `base.set()`.
+
+```java
+public static void CrearEmpleado(ObjectContainer base,
+        String cedula_empleado, String nombre_empleado,
+        String apellido_empleado, String correo, String telefono,
+        String fecha_contratacion, String cedula_jefe,
+        String comicion, String cod_trabajo,
+        double salario, int id_departamento) {
+    Empleados empleado1 = new Empleados(cedula_empleado, nombre_empleado,
+        apellido_empleado, correo, telefono, fecha_contratacion,
+        cedula_jefe, comicion, cod_trabajo, salario, id_departamento);
+    base.set(empleado1);
+}
+```
+
+The `main()` method demonstrates the call with a sample employee record:
+
+```java
+CrearEmpleado(base, "0106170129", "Anthony", "Fajardo",
+    "mauricio.2004@gmaikl.cs", "0987654321",
+    "12/01/2010", " ", "fiestas", "001", 450.0, 5);
+```
+
+<Note>
+  This module uses `base.set()` from the older db4o API. Newer versions of db4o may use `base.store()` instead. If you upgrade the db4o JAR, check whether `set()` has been deprecated in your version and replace it with `store()` accordingly.
+</Note>

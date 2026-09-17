@@ -1,0 +1,124 @@
+{
+  "projectType": "data-platform",
+  "projectName": "DBOO — Object-Oriented Database System",
+  "projectDescription": "A Java Swing desktop application for managing events, organizers, sponsors, merchants, and staff using the db4o object-oriented database (DBOO).",
+  "theme": "palm",
+  "primaryColor": "#009999",
+  "lightColor": "#00cccc",
+  "darkColor": "#006666",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "architecture"
+            ]
+          },
+          {
+            "group": "Data Model",
+            "pages": [
+              "data-model/overview",
+              "data-model/person-hierarchy",
+              "data-model/events",
+              "data-model/location"
+            ]
+          },
+          {
+            "group": "User Roles",
+            "pages": [
+              "roles/overview",
+              "roles/administrator",
+              "roles/organizer",
+              "roles/public-merchant"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/event-management",
+              "features/personnel-sponsors",
+              "features/reports-surveys",
+              "features/validation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Class Reference",
+            "pages": [
+              "reference/persona",
+              "reference/organizador",
+              "reference/evento",
+              "reference/comerciantes",
+              "reference/personal",
+              "reference/patrocinador",
+              "reference/publico",
+              "reference/location-classes",
+              "reference/validaciones"
+            ]
+          },
+          {
+            "group": "DB4O Module",
+            "pages": [
+              "reference/db4o-overview",
+              "reference/empleados"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Object-oriented persistence using db4o (.yap files)",
+    "Multi-role authentication: Administrator, Organizer, Public/Merchant",
+    "Full CRUD operations for Events, Organizers, Sponsors, Merchants, Departments, Locations, and Staff",
+    "Java Swing GUI with NetBeans-designed forms",
+    "Comprehensive input validation (cedula, email, dates, passwords, IDs)",
+    "Organizer surveys and report generation",
+    "Public attendee registration and event browsing",
+    "Sponsor management with social media and contact tracking",
+    "Personnel contract tracking with start/end dates and ratings",
+    "Booth (Puesto) assignment for commercial participants"
+  ],
+  "publicApiSurface": [
+    "Persona (base class: cedula, nombre, apellido, telefono, correo, direccion, celular, fechaNaci, genero)",
+    "Organizador extends Persona (cod_organizador, usuario, contraseña, presupuesto)",
+    "Patrocinador extends Persona (codigo_patri, descripcion_p, contacto_p, redes_sociales)",
+    "Comerciantes extends Persona (codigo_participante, tipo_comercio, productos_c, servicio_c, codigo_puesto)",
+    "Personal extends Persona (codigo_perso, tipo_personal, departamento_p, calificacion_p, fecha_contrato_inicio, fecha_contrato_fin)",
+    "Publico extends Persona (codigo_publico, tipo_entrada, estado_reguistro, preferencias_p, pago_p)",
+    "Ciudad (codigo_ciudad, pais_c, nombre, region)",
+    "Departamento (id_departamento, nombre, descripcion)",
+    "Direccion (codigo_direccion, calle_principal, calle_secundaria)",
+    "Puesto (codigo_puesto, nombrePuesto, descripcionPuesto, tipo_puesto)",
+    "Validaciones.ValidarCedula(String)",
+    "Validaciones.ValidarCorreo(String)",
+    "Validaciones.ValidarFechaNacimiento(int, int, int)",
+    "Validaciones.validarContrasena(String)",
+    "Validaciones.ValidarId(String)",
+    "Empleados (cedula_empleado, nombre_empleado, apellido_empleado, correo, telefono, fecha_contratacion, salario, id_departamento)",
+    "Trabajo_db4o.CrearEmpleado(ObjectContainer, ...)",
+    "Inicio (main entry form: login for Administrator, Organizer, Public/Merchant)",
+    "Crud_Evento (form: create/read/update/delete events)",
+    "Crud_Organizador / Crud_ModOrganizador / EliminarOrganizador (organizer management forms)",
+    "Crud_Comerciantes (merchant management form)",
+    "Crud_Patrocinado (sponsor management form)",
+    "Crud_Departamento (department management form)",
+    "Crud_Ubicacion (location management form)",
+    "Crud_Puestos (booth management form)",
+    "Cruds_Eventos (events CRUD for organizer menu)",
+    "Cruds_Personal (staff CRUD form)",
+    "ReporteOrganizador / ReporteOrganizadores (organizer report forms)",
+    "Encuestaa_Organizor (organizer survey form)",
+    "Blog (public blog/info screen)",
+    "Menu_Administradorr / MenuOrganizador / Menu_Publico (role dashboards)"
+  ]
+}

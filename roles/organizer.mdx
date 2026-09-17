@@ -1,0 +1,67 @@
+---
+title: "Organizer Role: Event and Team Management in DBOO"
+sidebarTitle: "Organizer"
+description: "Organizers in DBOO create and manage events, contracted staff, sponsors, and merchants through a dedicated menu after authenticating with their credentials."
+---
+
+The Organizer role is the primary working role in DBOO. Organizers authenticate through `Login_Organizador` and access `MenuOrganizador`, where they manage all aspects of their events — from event creation to staff scheduling, sponsorship tracking, and booth assignments. Like the admin dashboard, `MenuOrganizador` uses a `CardLayout`-based dynamic panel to present each management form without leaving the main window.
+
+## Authentication
+
+<Steps>
+  <Step title="Navigate to the organizer login">
+    From the `Inicio` welcome screen, open the menu bar and select **INICIO COMO: > Organizadores > Iniciar sesión**. This disposes the `Inicio` window and opens `Login_Organizador`.
+  </Step>
+  <Step title="Enter credentials">
+    `Login_Organizador` presents a `txtusuario` text field and a `txtcantra` password field. On clicking **Iniciar Sesión**, the form opens the db4o object store at `Inicio.direccion`, queries for an `Organizador` object whose `usuario` and `contraseña` fields match the entered values, and validates the result.
+  </Step>
+  <Step title="Access the organizer dashboard">
+    If the db4o query returns a matching `Organizador` record, `Login_Organizador` disposes itself and opens `MenuOrganizador`. The dashboard initialises with the `Info_Organizador` panel displayed in the dynamic content area.
+  </Step>
+</Steps>
+
+<Note>
+  Organizer credentials (`usuario` + `contraseña`) are created exclusively by the administrator using the `Asignar_Credencialess` form. An organizer cannot self-register — the "Solicitar Cuenta" button in `Login_Organizador` only shows a message instructing the user to contact the administrator in person.
+</Note>
+
+## Organizer capabilities
+
+`MenuOrganizador` exposes the following forms via its sidebar buttons, each loaded into the `pnldinamico` `CardLayout` panel.
+
+| Form class | Button label | Purpose |
+|---|---|---|
+| `Cruds_Eventos` | Eventos | Full CRUD for events owned by this organizer |
+| `Crud_Patrocinado` | Patrocinador | Manage event sponsors |
+| `Cruds_Personal` | Personal | Manage contracted staff (with dates, ratings, departments) |
+| `Crud_Departamento` | Departamento | Manage department records linked to this organizer's events |
+| `Crud_Puestos` | Puesto | Manage commercial booths at their events |
+| `Encuestaa_Organizor` | Encuesta | Fill out or view post-event surveys |
+| `AceptarSolicitud` | Solicitudes | Review and accept booth/participation requests |
+| `Info_Organizador` | — | View own organizer profile (default landing panel) |
+
+Additional features accessible from the organizer context include `ReporteOrganizador` for generating a personal organizer report and `Blog` for accessing the public blog/information section.
+
+## Organizer data model
+
+Each organizer is stored in the db4o database as an instance of `Clases.Organizador`. The full constructor signature is:
+
+```java
+public Organizador(String cod_organizador, String usuario,
+                   String contraseña, double Presupuesto,
+                   String cedula, String nombre, String apellido,
+                   String telefono, String correo, String direccion,
+                   String celular, Date fecchaNaci, String genero)
+```
+
+`Organizador` extends `Persona`, so `cedula`, `nombre`, `apellido`, `telefono`, `correo`, `direccion`, `celular`, `fecchaNaci`, and `genero` are inherited from the parent class. The organizer-specific fields are:
+
+| Field | Type | Description |
+|---|---|---|
+| `cod_organizador` | `String` | Unique organizer code |
+| `usuario` | `String` | Login username (assigned by administrator) |
+| `contraseña` | `String` | Login password (assigned by administrator) |
+| `Presupuesto` | `double` | Organizer budget |
+
+## Back navigation
+
+The home icon button (`jButton1`) in `MenuOrganizador` disposes the dashboard and returns the user to the `Inicio` welcome screen.
